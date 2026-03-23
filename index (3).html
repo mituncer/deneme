@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mituncer / deneme</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg:       #0d0d0d;
+    --bg2:      #141414;
+    --bg3:      #1c1c1c;
+    --border:   #272727;
+    --border-hi:#383838;
+    --green:    #39d353;
+    --green-dk: #1a6b29;
+    --amber:    #e3b341;
+    --blue:     #58a6ff;
+    --muted:    #444;
+    --text:     #cdd9e5;
+    --text-dim: #6e7f8d;
+    --red:      #f85149;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    min-height: 100vh;
+    padding: 2.5rem 1.25rem;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .wrap { max-width: 700px; margin: 0 auto; }
+
+  /* ── Header ── */
+  .header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .breadcrumb {
+    font-size: 11px; color: var(--text-dim);
+    margin-bottom: 6px; display: flex; gap: 6px; align-items: center;
+  }
+  .breadcrumb .u { color: var(--green); }
+  .breadcrumb .r { color: var(--blue); }
+  h1 { font-size: 20px; font-weight: 700; color: #e6edf3; letter-spacing: -0.3px; }
+  h1 em { color: var(--green); font-style: normal; }
+  .sub { font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+  .cursor {
+    display: inline-block; width: 7px; height: 13px;
+    background: var(--green); margin-left: 1px; vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ── Section label ── */
+  .lbl {
+    font-size: 10px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 2.5px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .lbl::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── Search ── */
+  .search-wrap { position: relative; margin-bottom: 2rem; }
+  .pfx {
+    position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+    color: var(--green); font-weight: 700; pointer-events: none; z-index: 2;
+  }
+  input[type=text] {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text); font-family: inherit; font-size: 13px;
+    padding: 11px 13px 11px 30px; outline: none; border-radius: 4px;
+    caret-color: var(--green); transition: border-color .15s;
+  }
+  input::placeholder { color: var(--muted); }
+  input:focus { border-color: var(--green-dk); }
+
+  /* ── Dropdown ── */
+  .dd {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: var(--bg2); border: 1px solid var(--border-hi);
+    border-radius: 4px; z-index: 50; display: none; overflow: hidden;
+  }
+  .dd.open { display: block; }
+  .dd-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 13px; border-bottom: 1px solid var(--border);
+    text-decoration: none; color: inherit; transition: background .1s;
+    cursor: pointer;
+  }
+  .dd-row:last-child { border-bottom: none; }
+  .dd-row:hover, .dd-row.sel { background: var(--bg3); }
+  .dd-row .ico { color: var(--amber); font-size: 11px; flex-shrink: 0; }
+  .dd-row .nm  { color: var(--text); flex: 1; }
+  .dd-row .nm mark { background: none; color: var(--green); }
+  .dd-row .sz  { color: var(--text-dim); font-size: 10px; }
+  .empty { padding: 9px 13px; color: var(--text-dim); font-size: 11px; }
+
+  /* ── File list ── */
+  .list { margin-bottom: 2.5rem; }
+  .row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 13px; border: 1px solid var(--border); border-top: none;
+    text-decoration: none; color: inherit; transition: background .1s;
+  }
+  .row:first-child { border-top: 1px solid var(--border); border-radius: 4px 4px 0 0; }
+  .row:last-child  { border-radius: 0 0 4px 4px; }
+  .row:only-child  { border-radius: 4px; }
+  .row:hover { background: var(--bg2); border-color: var(--border-hi); }
+  .row .ico  { color: var(--amber); font-size: 11px; flex-shrink: 0; }
+  .row .nm   { color: var(--blue); flex: 1; }
+  .row .meta { color: var(--text-dim); font-size: 10px; text-align: right; line-height: 1.5; }
+
+  /* ── Notice ── */
+  .notice {
+    font-size: 11px; color: var(--amber); padding: 8px 13px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-left: 2px solid var(--amber); border-radius: 4px;
+    margin-bottom: 1.5rem; display: none;
+  }
+
+  /* ── Status bar ── */
+  .status {
+    padding-top: 1rem; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 10px; color: var(--muted);
+  }
+  .dot {
+    width: 5px; height: 5px; border-radius: 50%; background: var(--green);
+    display: inline-block; margin-right: 6px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .dot.warn { background: var(--amber); animation: none; }
+  .dot.err  { background: var(--red);   animation: none; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .ld { color: var(--text-dim); font-size: 11px; padding: .75rem 0; }
+  .ld span { animation: blink 1s step-end infinite; }
+  .ld span:nth-child(2) { animation-delay:.2s; }
+  .ld span:nth-child(3) { animation-delay:.4s; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="breadcrumb">
+      <span class="u">mituncer</span><span>/</span><span class="r">deneme</span><span>·</span><span>main</span>
+    </div>
+    <h1>test <em>hub</em><span class="cursor"></span></h1>
+    <div class="sub">// geliştirme alanı — html prototipleri</div>
+  </div>
+
+  <div class="notice" id="notice"></div>
+
+  <div class="lbl">ara</div>
+  <div class="search-wrap">
+    <span class="pfx">&gt;</span>
+    <input type="text" id="q" placeholder="dosya adı..." autocomplete="off" spellcheck="false">
+    <div class="dd" id="dd"></div>
+  </div>
+
+  <div class="lbl">dosyalar</div>
+  <div class="list" id="list">
+    <div class="ld">yükleniyor<span>.</span><span>.</span><span>.</span></div>
+  </div>
+
+  <div class="status">
+    <div><span class="dot" id="dot"></span><span id="stxt">hazırlanıyor</span></div>
+    <div id="sright">mituncer/deneme</div>
+  </div>
+
+</div>
+<script>
+const OWNER  = 'mituncer';
+const REPO   = 'deneme';
+const BASE   = `https://${OWNER}.github.io/${REPO}/`;
+
+let files = [], sel = -1;
+
+const $  = id => document.getElementById(id);
+const sz = b  => !b ? '' : b < 1024 ? b+'B' : (b/1024).toFixed(1)+'KB';
+
+function setDot(mode) { $('dot').className = 'dot' + (mode==='ok'?'':' '+mode); }
+
+function notice(msg) { const n=$('notice'); n.textContent=msg; n.style.display='block'; }
+
+function renderList(arr) {
+  $('list').innerHTML = arr.length
+    ? arr.map(f => `
+      <a class="row" href="${BASE}${f.name}" target="_blank" rel="noopener">
+        <span class="ico">▸</span>
+        <span class="nm">${f.name}</span>
+        <span class="meta">${sz(f.size)}${f.date ? '<br>'+f.date : ''}</span>
+      </a>`).join('')
+    : '<div class="empty">// henüz dosya yok — repoya bir .html dosyası yükle</div>';
+}
+
+function hl(t, q) {
+  const i = t.toLowerCase().indexOf(q.toLowerCase());
+  return i<0 ? t : t.slice(0,i)+`<mark>${t.slice(i,i+q.length)}</mark>`+t.slice(i+q.length);
+}
+
+function renderDd(q) {
+  const dd = $('dd');
+  if (!q.trim()) { dd.classList.remove('open'); return; }
+  const hits = files.filter(f => f.name.toLowerCase().includes(q.toLowerCase())).slice(0,8);
+  dd.innerHTML = hits.length
+    ? hits.map((f,i)=>`
+        <a class="dd-row" href="${BASE}${f.name}" target="_blank" rel="noopener" data-i="${i}">
+          <span class="ico">◈</span>
+          <span class="nm">${hl(f.name,q)}</span>
+          <span class="sz">${sz(f.size)}</span>
+        </a>`).join('')
+    : '<div class="empty">// eşleşme yok</div>';
+  dd.classList.add('open'); sel=-1;
+}
+
+async function load() {
+  /* files.json — GitHub Actions her push'ta günceller */
+  try {
+    const r = await fetch(`files.json?t=${Date.now()}`);
+    if (!r.ok) throw new Error('files.json bulunamadı');
+    files = await r.json();
+    renderList(files);
+    $('stxt').textContent = `${files.length} dosya · hazır`;
+    $('sright').textContent = 'files.json · actions';
+    setDot('ok');
+  } catch(e) {
+    $('list').innerHTML = '<div class="empty">// files.json yok — workflow henüz çalışmadı mı?</div>';
+    $('stxt').textContent = 'bağlanamadı';
+    setDot('err');
+    notice('⚠ files.json bulunamadı. .github/workflows/update-files.yml dosyasını repoya ekle ve bir kez push yap.');
+  }
+}
+
+const inp = $('q');
+inp.addEventListener('input', e => renderDd(e.target.value));
+inp.addEventListener('keydown', e => {
+  const rows = $('dd').querySelectorAll('.dd-row');
+  if      (e.key==='ArrowDown')  { e.preventDefault(); sel=Math.min(sel+1,rows.length-1); rows.forEach((r,i)=>r.classList.toggle('sel',i===sel)); }
+  else if (e.key==='ArrowUp')    { e.preventDefault(); sel=Math.max(sel-1,-1);            rows.forEach((r,i)=>r.classList.toggle('sel',i===sel)); }
+  else if (e.key==='Enter' && sel>=0 && rows[sel]) rows[sel].click();
+  else if (e.key==='Escape') { $('dd').classList.remove('open'); inp.blur(); }
+});
+document.addEventListener('click', e => { if(!e.target.closest('.search-wrap')) $('dd').classList.remove('open'); });
+
+load();
+</script>
+</body>
+</html>
