@@ -6,7 +6,7 @@
     "date": "January 2017",
     "readTime": "4 min read",
     "category": "Leadership",
-    "image": "images/articles/racing.jpg",
+    "image": "images/racing.jpg",
     "file": "articles/taking-risks-racing.html"
   },
   {
@@ -16,7 +16,7 @@
     "date": "January 2025",
     "readTime": "4 min read",
     "category": "Behavioral Economics",
-    "image": "images/articles/hindsight.jpg",
+    "image": "images/hindsight.jpg",
     "file": "articles/hindsight-bias-learning.html"
   },
   {
@@ -26,7 +26,7 @@
     "date": "November 2024",
     "readTime": "3 min read",
     "category": "Legacy",
-    "image": "images/articles/baton.jpg",
+    "image": "images/baton.jpg",
     "file": "articles/some-races-never-end.html"
   }
 ]
