@@ -17,7 +17,7 @@ jobs:
         run: |
           echo "[" > files.json
           first=true
-          for f in $(find . -maxdepth 1 -name "*.html" ! -name "index.html" | sort); do
+          for f in $(find . -maxdepth 1 -name "*.html" ! -name "index.html" | xargs ls -t 2>/dev/null); do
             name="${f#./}"
             size=$(wc -c < "$f")
             date=$(git log -1 --format="%ci" -- "$f" 2>/dev/null | cut -d' ' -f1)
