@@ -68,24 +68,34 @@
   .lbl::after { content:''; flex:1; height:1px; background:var(--border); }
 
   /* ── Inputs ── */
-  .input-wrap { position: relative; margin-bottom: 1.5rem; }
+  .input-wrap { 
+    position: relative; 
+    margin-bottom: 1.5rem; 
+    display: flex; 
+    align-items: center;
+  }
   .pfx {
-    position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+    position: absolute; left: 13px;
     color: var(--green); font-weight: 700; pointer-events: none; z-index: 2;
   }
   
-  /* TIKLANABİLİR BUTON STİLİ */
+  /* BUTON BURADA - Kesin görünmesi için renk ve opacity ayarlandı */
   .btn-go {
-    position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
-    color: var(--green); cursor: pointer; font-size: 18px; z-index: 5;
-    opacity: 0.6; transition: opacity 0.2s;
+    position: absolute; 
+    right: 13px; 
+    color: var(--green); 
+    cursor: pointer; 
+    font-size: 20px; 
+    z-index: 10;
+    font-weight: bold;
+    user-select: none;
   }
-  .btn-go:hover { opacity: 1; }
+  .btn-go:hover { color: #fff; }
 
   input[type=text] {
     width: 100%; background: var(--bg2); border: 1px solid var(--border);
     color: var(--text); font-family: inherit; font-size: 13px;
-    padding: 11px 40px 11px 30px; outline: none; border-radius: 4px;
+    padding: 11px 45px 11px 30px; outline: none; border-radius: 4px;
     caret-color: var(--green); transition: border-color .15s;
   }
   input::placeholder { color: var(--muted); }
@@ -106,7 +116,6 @@
   }
   .dd-row:last-child { border-bottom: none; }
   .dd-row:hover, .dd-row.sel { background: var(--bg3); }
-  .dd-row .nm mark { background: none; color: var(--green); }
 
   /* ── File list ── */
   .list { margin-bottom: 2.5rem; }
@@ -154,7 +163,7 @@
   <div class="input-wrap">
     <span class="pfx">#</span>
     <input type="text" id="repo-in" placeholder="repo adı..." autocomplete="off" spellcheck="false">
-    <span class="btn-go" id="btn-submit">↵</span>
+    <div class="btn-go" id="submit-btn">↵</div>
     <div class="dd" id="repo-dd"></div>
   </div>
 
@@ -194,7 +203,6 @@ function notice(msg) {
   n.textContent=msg; n.style.display='block'; 
 }
 
-// --- ANA YÜKLEME FONKSİYONU ---
 async function load() {
   notice(null);
   $('list').innerHTML = '<div style="padding:10px; color:var(--text-dim)">bağlanıyor...</div>';
@@ -212,7 +220,6 @@ async function load() {
     $('sright').textContent = `${OWNER}/${REPO}`;
     setDot('ok');
     
-    // Geçmişe kaydet
     const full = `${OWNER}/${REPO}`;
     if (!repoHistory.includes(full)) {
       repoHistory.push(full);
@@ -226,8 +233,8 @@ async function load() {
   }
 }
 
-// --- VERİ İŞLEME VE TETİKLEME ---
-function processInput(val) {
+// OTOMATİK TAMAMLAMA VE İŞLEME
+function runLoad(val) {
   const input = val.trim();
   if (!input) return;
 
@@ -236,7 +243,7 @@ function processInput(val) {
     OWNER = parts[0];
     REPO = parts[1];
   } else {
-    OWNER = 'mituncer'; // Sadece repo adı yazılırsa otomatik mituncer ekle
+    OWNER = 'mituncer'; // Sadece repo yazılırsa mituncer ekle
     REPO = input;
   }
   
@@ -245,21 +252,20 @@ function processInput(val) {
   load();
 }
 
-// Buton Tıklama
-$('btn-submit').onclick = () => processInput($('repo-in').value);
+// BUTON TIKLAMA OLAYI
+$('submit-btn').onclick = () => runLoad($('repo-in').value);
 
-// Enter Tuşu
+// ENTER TUŞU OLAYI
 $('repo-in').onkeydown = e => {
-  if (e.key === 'Enter') processInput(e.target.value);
+  if (e.key === 'Enter') runLoad(e.target.value);
 };
 
-// Hafıza (Dropdown) Seçimi
+// DROPDOWN SEÇİMİ
 window.selectRepo = path => {
   $('repo-in').value = path;
-  processInput(path);
+  runLoad(path);
 };
 
-// --- DİĞER İŞLEVLER ---
 function renderList(arr) {
   $('list').innerHTML = arr.length
     ? arr.map(f => `
@@ -268,7 +274,7 @@ function renderList(arr) {
         <span class="nm">${f.name}</span>
         <span class="meta">${sz(f.size)}<br>${f.date || ''}</span>
       </a>`).join('')
-    : '<div style="padding:10px; color:var(--muted)">// dosya bulunamadı veya liste boş</div>';
+    : '<div style="padding:10px; color:var(--muted)">// dosya yok</div>';
 }
 
 $('repo-in').oninput = e => {
