@@ -73,10 +73,19 @@
     position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
     color: var(--green); font-weight: 700; pointer-events: none; z-index: 2;
   }
+  
+  /* Tıklanabilir Buton Ekledim */
+  .btn-go {
+    position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
+    color: var(--green); cursor: pointer; font-size: 18px; z-index: 3;
+    opacity: 0.6; transition: opacity 0.2s;
+  }
+  .btn-go:hover { opacity: 1; }
+
   input[type=text] {
     width: 100%; background: var(--bg2); border: 1px solid var(--border);
     color: var(--text); font-family: inherit; font-size: 13px;
-    padding: 11px 13px 11px 30px; outline: none; border-radius: 4px;
+    padding: 11px 40px 11px 30px; outline: none; border-radius: 4px;
     caret-color: var(--green); transition: border-color .15s;
   }
   input::placeholder { color: var(--muted); }
@@ -124,178 +133,5 @@
     display: flex; justify-content: space-between; align-items: center;
     font-size: 10px; color: var(--muted);
   }
-  .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 6px; }
-  .dot.warn { background: var(--amber); }
-  .dot.err  { background: var(--red); }
-</style>
-</head>
-<body>
-<div class="wrap">
+  .dot {
 
-  <div class="header">
-    <div class="breadcrumb">
-      <span class="u">mituncer</span><span>/</span><span class="r" id="b-repo">hub</span><span>·</span><span>main</span>
-    </div>
-    <h1>central <em>hub</em><span class="cursor"></span></h1>
-  </div>
-
-  <div class="notice" id="notice"></div>
-
-  <div class="lbl">repo değiştir</div>
-  <div class="input-wrap">
-    <span class="pfx">#</span>
-    <input type="text" id="repo-in" placeholder="kullanıcı/repo (örn: mituncer/deneme)" autocomplete="off" spellcheck="false">
-    <div class="dd" id="repo-dd"></div>
-  </div>
-
-  <div class="lbl">dosyalarda ara</div>
-  <div class="input-wrap">
-    <span class="pfx">&gt;</span>
-    <input type="text" id="q" placeholder="dosya adı..." autocomplete="off" spellcheck="false">
-    <div class="dd" id="dd"></div>
-  </div>
-
-  <div class="lbl">dosyalar</div>
-  <div class="list" id="list">
-    <div style="color:var(--muted)">// repo yüklenmesi bekleniyor...</div>
-  </div>
-
-  <div class="status">
-    <div><span class="dot" id="dot"></span><span id="stxt">hazır</span></div>
-    <div id="sright">mituncer/hub</div>
-  </div>
-
-</div>
-
-<script>
-let OWNER = 'mituncer';
-let REPO  = 'deneme'; 
-let BASE  = `https://${OWNER}.github.io/${REPO}/`;
-let files = [];
-let repoHistory = JSON.parse(localStorage.getItem('repo_history') || '[]');
-
-const $ = id => document.getElementById(id);
-const sz = b => !b ? '' : b < 1024 ? b+'B' : (b/1024).toFixed(1)+'KB';
-
-function setDot(mode) { $('dot').className = 'dot' + (mode==='ok'?'':' '+mode); }
-function notice(msg) { 
-  const n=$('notice'); 
-  if(!msg) { n.style.display='none'; return; }
-  n.textContent=msg; n.style.display='block'; 
-}
-
-// --- Hafıza ve Öneri Mantığı ---
-function saveRepo(o, r) {
-  const full = `${o}/${r}`;
-  if (!repoHistory.includes(full)) {
-    repoHistory.push(full);
-    localStorage.setItem('repo_history', JSON.stringify(repoHistory));
-  }
-}
-
-$('repo-in').addEventListener('input', e => {
-  const q = e.target.value.toLowerCase();
-  const dd = $('repo-dd');
-  if (!q) { dd.classList.remove('open'); return; }
-  
-  const hits = repoHistory.filter(h => h.toLowerCase().includes(q)).slice(0, 5);
-  if (hits.length > 0) {
-    dd.innerHTML = hits.map(h => `
-      <div class="dd-row" onclick="selectRepo('${h}')">
-        <span style="color:var(--blue); font-size:11px">#</span>
-        <span class="nm">${h}</span>
-      </div>`).join('');
-    dd.classList.add('open');
-  } else {
-    dd.classList.remove('open');
-  }
-});
-
-function selectRepo(path) {
-  $('repo-in').value = path;
-  $('repo-dd').classList.remove('open');
-  loadFromInput(path);
-}
-
-// --- Yükleme ve Listeleme ---
-function renderList(arr) {
-  $('list').innerHTML = arr.length
-    ? arr.map(f => `
-      <a class="row" href="${BASE}${f.name}" target="_blank" rel="noopener">
-        <span style="color:var(--amber); font-size:11px">▸</span>
-        <span class="nm">${f.name}</span>
-        <span class="meta">${sz(f.size)}<br>${f.date || ''}</span>
-      </a>`).join('')
-    : '<div style="padding:10px; color:var(--muted)">// dosya bulunamadı veya liste boş</div>';
-}
-
-async function load() {
-  notice(null);
-  $('list').innerHTML = '<div style="padding:10px; color:var(--text-dim)">bağlanıyor...</div>';
-  setDot('warn');
-  
-  try {
-    const r = await fetch(`${BASE}files.json?t=${Date.now()}`);
-    if (!r.ok) throw new Error();
-    
-    files = await r.json();
-    renderList(files);
-    
-    $('b-repo').textContent = REPO;
-    $('stxt').textContent = `${files.length} dosya yüklendi`;
-    $('sright').textContent = `${OWNER}/${REPO}`;
-    setDot('ok');
-    saveRepo(OWNER, REPO); // Başarılıysa hafızaya al
-  } catch(e) {
-    files = [];
-    renderList([]);
-    setDot('err');
-    notice(`⚠ Hata: "${OWNER}/${REPO}" reposunda files.json bulunamadı.`);
-  }
-}
-
-function loadFromInput(val) {
-  if (val.includes('/')) {
-    [OWNER, REPO] = val.split('/');
-  } else {
-    REPO = val;
-  }
-  BASE = `https://${OWNER}.github.io/${REPO}/`;
-  load();
-}
-
-// Event Listeners
-$('repo-in').addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    loadFromInput(e.target.value.trim());
-    $('repo-dd').classList.remove('open');
-  }
-});
-
-$('q').addEventListener('input', e => {
-  const q = e.target.value.toLowerCase();
-  const dd = $('dd');
-  if (!q) { dd.classList.remove('open'); return; }
-  
-  const hits = files.filter(f => f.name.toLowerCase().includes(q)).slice(0, 8);
-  dd.innerHTML = hits.map(f => `
-    <a class="dd-row" href="${BASE}${f.name}" target="_blank">
-      <span style="color:var(--amber)">◈</span>
-      <span class="nm">${f.name}</span>
-    </a>`).join('');
-  dd.classList.toggle('open', hits.length > 0);
-});
-
-// Sayfa dışına tıklanınca dropdownları kapat
-document.addEventListener('click', e => {
-  if (!e.target.closest('.input-wrap')) {
-    $('dd').classList.remove('open');
-    $('repo-dd').classList.remove('open');
-  }
-});
-
-// İlk yükleme
-load();
-</script>
-</body>
-</html>
