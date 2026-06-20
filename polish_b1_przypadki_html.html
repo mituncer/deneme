@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polski B1 - Przypadki</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F6F4FB; min-height: 100vh; padding-bottom: 80px; }
+button { font-family: inherit; cursor: pointer; }
+input, textarea { font-family: inherit; }
+
+#hdr { background: #3B2D5C; padding: 10px 16px; }
+#hdr-top { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+#hdr-title { color: #D8B4FE; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+#hdr-sub { color: rgba(255,255,255,0.6); font-size: 11px; }
+#timer { border-radius: 10px; padding: 5px 12px; display: flex; align-items: center; gap: 6px; border: 1.5px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.12); }
+#timer.urgent { background: #7C2D12; border-color: #F97316; }
+#timerText { font-weight: 700; color: #fff; font-size: 15px; }
+#xp-labels { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.55); margin-bottom: 3px; }
+#xp-bar { background: rgba(255,255,255,0.15); border-radius: 99px; height: 7px; }
+#xp-fill { height: 100%; background: linear-gradient(90deg, #C084FC, #60A5FA); border-radius: 99px; transition: width 0.4s; width: 0%; }
+
+#tabs-wrap { background: #fff; border-bottom: 2px solid #D6CCE8; overflow-x: scroll; -webkit-overflow-scrolling: touch; }
+#tabs { display: flex; flex-direction: row; padding: 0; }
+.tab { flex: 0 0 auto; width: 72px; padding: 8px 2px; background: none; border: none; border-bottom: 3px solid transparent; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.tab .ti { font-size: 16px; }
+.tab .tl { font-size: 8px; font-weight: 600; color: #6B7280; text-align: center; line-height: 1.2; }
+.tab .td { font-size: 8px; color: #52B788; font-weight: 700; }
+
+#main { max-width: 740px; margin: 0 auto; padding: 16px 14px; }
+
+.card { background: #fff; border: 1.5px solid #D6CCE8; border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
+.card.ok { background: #F0FDF4; border-color: #86EFAC; }
+.card.bad { background: #FFF5F5; border-color: #FCA5A5; }
+
+.opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.opt { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: #fff; border: 1.5px solid #E5E7EB; border-radius: 10px; font-size: 13px; color: #374151; font-weight: 500; text-align: left; width: 100%; }
+.opt.ok { background: #DCFCE7; border-color: #86EFAC; color: #166534; font-weight: 700; }
+.opt.bad { background: #FEE2E2; border-color: #FCA5A5; color: #991B1B; }
+.opt .ol { font-weight: 700; font-size: 11px; min-width: 16px; color: #9CA3AF; }
+
+.res { margin-top: 10px; border-radius: 10px; overflow: hidden; }
+.res-top { padding: 8px 12px; font-size: 12px; font-weight: 600; }
+.res-top.ok { background: #DCFCE7; color: #166534; }
+.res-top.bad { background: #FEE2E2; color: #991B1B; }
+.res-exp { background: #F8FAFF; border: 1px solid #DBEAFE; padding: 8px 12px; font-size: 12px; color: #1A1E2E; }
+
+.hint-box { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #92400E; margin-bottom: 10px; }
+
+.ptabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.ptab { flex: 1; padding: 10px; background: #fff; border: 1.5px solid #D6CCE8; border-radius: 10px; font-weight: 700; font-size: 13px; color: #1A1E2E; }
+
+.build-zone { min-height: 44px; background: #F5F3FF; border: 2px dashed #C4B5FD; border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.bp { border: none; border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: 600; }
+.bp.placed { background: #7C3AED; color: #fff; }
+.bp.pool { background: #EDE9FE; border: 1.5px solid #C4B5FD; color: #6B21A8; }
+
+.cl-item { background: #FAFAFA; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
+.cl-item.ok { background: #F0FDF4; border-color: #86EFAC; }
+.cl-item.bad { background: #FFF5F5; border-color: #FCA5A5; }
+.cl-opts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.cl-opt { padding: 6px 10px; background: #fff; border: 1.5px solid #E5E7EB; border-radius: 10px; font-size: 12px; color: #374151; font-weight: 500; }
+.cl-opt.sel { background: #F3E5F5; border-color: #8E24AA; color: #4A148C; font-weight: 700; }
+.cl-opt.ok { background: #DCFCE7; border-color: #86EFAC; color: #166534; font-weight: 700; }
+.cl-opt.bad { background: #FEE2E2; border-color: #FCA5A5; color: #991B1B; }
+
+.tag-btn { background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 99px; font-size: 11px; font-weight: 600; color: #6B7280; padding: 3px 10px; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 5px; }
+.tag-box { border-radius: 10px; padding: 8px 12px; margin-top: 6px; margin-bottom: 4px; font-size: 12px; font-weight: 700; }
+.hint-btn { background: #F0FDF4; border: 1px solid #86EFAC; border-radius: 99px; font-size: 11px; font-weight: 600; color: #2D6A4F; padding: 3px 10px; margin-bottom: 8px; }
+
+.en-tip { position: relative; display: inline-block; cursor: pointer; border-bottom: 1.5px dotted #93C5FD; color: #93C5FD; flex-shrink: 0; font-size: 12px; }
+.en-pop { position: absolute; left: 0; top: 125%; z-index: 100; background: #1E3A8A; color: #fff; font-size: 12px; padding: 6px 10px; border-radius: 8px; white-space: nowrap; max-width: 240px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); pointer-events: none; line-height: 1.4; }
+
+.nav-row { display: flex; gap: 10px; margin-top: 20px; }
+.nav-btn { flex: 1; border: none; border-radius: 12px; padding: 12px; font-weight: 700; font-size: 13px; }
+
+.vocab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.vcard { border-radius: 12px; padding: 12px 14px; border: 1.5px solid #D6CCE8; background: #fff; text-align: left; width: 100%; min-height: 80px; }
+.match-btn { display: block; width: 100%; text-align: left; padding: 9px 12px; margin-bottom: 8px; border-radius: 10px; font-size: 12px; border: 2px solid #D6CCE8; background: #fff; color: #1A1E2E; }
+.match-btn.done { background: #DCFCE7; border-color: #86EFAC; color: #166534; font-weight: 700; }
+.match-btn.sel { background: #EFF6FF; border-color: #1D4ED8; font-weight: 700; }
+
+.finish { border-radius: 14px; padding: 22px; text-align: center; color: #fff; margin-top: 16px; }
+
+.d-bubble { max-width: 90%; border-radius: 14px; padding: 12px 14px; }
+.d-left { background: #F0FDFA; border: 1.5px solid #5EEAD4; border-top-left-radius: 4px; }
+.d-right { background: #EFF6FF; border: 1.5px solid #BFDBFE; border-top-right-radius: 4px; }
+
+.tbl { background: #fff; border: 1px solid #D6CCE8; border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+.tbl-hd { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; padding: 8px 12px; }
+.tbl-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; padding: 8px 12px; border-top: 1px solid #F3E8FF; font-size: 11px; }
+
+.sp-dots { display: flex; gap: 3px; margin-top: 6px; flex-wrap: wrap; }
+.sp-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #E5E7EB; background: #F3F4F6; }
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div id="hdr-top">
+    <span style="font-size:22px">🏠</span>
+    <div style="flex:1">
+      <div id="hdr-title">Codzienne Czynności · B1 · 50 minut</div>
+      <div id="hdr-sub">Miejscownik</div>
+    </div>
+    <div id="timer"><span>⏱️</span><span id="timerText">50:00</span></div>
+  </div>
+  <div id="xp-labels"><span id="xpL">XP: 0 / 0</span><span id="xpP">0%</span></div>
+  <div id="xp-bar"><div id="xp-fill"></div></div>
+</div>
+
+<div id="tabs-wrap"><div id="tabs"></div></div>
+<div id="main"></div>
+
+<script>
+// ── GLOBALS ──────────────────────────────────────────────────
+var state = {
+  t: 3000, xp: 0, idx: 0,
+  ans: {}, phase: {},
+  vp: 'cards', vflip: {}, vmatch: {}, vsel: null, vti: {}, vta: {},
+  dans: {}, sc: 0, sans: {}, smode: 'q',
+  tr: {}, hints: {}, placed: {}, pool: {}, csel: {}, sopts: {}
+};
+
+var TC = {
+  loc: { bg:'#F3E5F5', bd:'#8E24AA', tx:'#4A148C' },
+  gen: { bg:'#FFF3E0', bd:'#FB8C00', tx:'#E65100' },
+  acc: { bg:'#E8F5E9', bd:'#43A047', tx:'#1B5E20' },
+  ins: { bg:'#E3F2FD', bd:'#1E88E5', tx:'#0D47A1' },
+  mixed: { bg:'#FBE9E7', bd:'#F4511E', tx:'#BF360C' }
+};
+
+function shuf(a) { var b=[].concat(a); for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=b[i];b[i]=b[j];b[j]=x;} return b; }
+function el(tag) { return document.createElement(tag); }
+function tx(s) { return document.createTextNode(String(s)); }
+function ap(p,c) { if(c) p.appendChild(typeof c==='string'?tx(c):c); return p; }
+function div(style) { var d=el('div'); if(style)d.style.cssText=style; return d; }
+function span(txt,style) { var s=el('span'); if(style)s.style.cssText=style; if(txt)ap(s,tx(txt)); return s; }
+function btn(txt,style,onclick) { var b=el('button'); b.style.cssText=style||''; if(txt)b.textContent=txt; if(onclick)b.addEventListener('click',onclick); return b; }
+
+function enTip(text) {
+  if(!text) return tx('');
+  var w = el('span'); w.className='en-tip'; w.textContent='🇬🇧';
+  var pop = null;
+  function show() { if(!pop){ pop=el('span'); pop.className='en-pop'; pop.textContent=text; w.appendChild(pop); } }
+  function hide() { if(pop){ pop.parentNode.removeChild(pop); pop=null; } }
+  w.addEventListener('mouseenter', show);
+  w.addEventListener('mouseleave', hide);
+  w.addEventListener('touchstart', function(e){ e.preventDefault(); pop?hide():show(); }, {passive:false});
+  return w;
+}
+
+function tagBtn(qid, note, noteEn, tag) {
+  var tc = TC[tag]||TC.mixed;
+  var wrap = div('margin-bottom:10px');
+  var b = el('button'); b.className='tag-btn'; b.textContent='🔎 pokaż typ';
+  ap(wrap, b);
+  var box = null;
+  b.addEventListener('click', function(){
+    state.tr[qid] = !state.tr[qid];
+    if(state.tr[qid]){
+      b.textContent='🙈 ukryj typ';
+      b.style.cssText='background:'+tc.bg+';border:1px solid '+tc.bd+';border-radius:99px;font-size:11px;font-weight:600;color:'+tc.tx+';padding:3px 10px;display:inline-flex;align-items:center;gap:5px;';
+      box=div('background:'+tc.bg+';border:1.5px solid '+tc.bd+';border-radius:10px;padding:8px 12px;margin-top:6px;margin-bottom:4px;font-size:12px;font-weight:700;color:'+tc.tx);
+      var row=div('display:flex;align-items:center;gap:6px;');
+      ap(row,tx(note)); ap(row,enTip(noteEn)); ap(box,row); ap(wrap,box);
+    } else {
+      b.textContent='🔎 pokaż typ'; b.style.cssText='';
+      if(box&&box.parentNode){box.parentNode.removeChild(box);box=null;}
+    }
+  });
+  return wrap;
+}
+
+function hintBtnEl(qid, hintText) {
+  var wrap = div('margin-bottom:8px');
+  var b = el('button'); b.className='hint-btn'; b.textContent='💡 wskazówka'; ap(wrap,b);
+  var box = null;
+  b.addEventListener('click', function(){
+    state.hints[qid]=!state.hints[qid];
+    if(state.hints[qid]){
+      b.textContent='🙈 ukryj';
+      box=div(''); box.className='hint-box'; ap(box,tx('💡 '+hintText)); ap(wrap,box);
+    } else {
+      b.textContent='💡 wskazówka';
+      if(box&&box.parentNode){box.parentNode.removeChild(box);box=null;}
+    }
+  });
+  return wrap;
+}
+
+// ── DATA ──────────────────────────────────────────────────────
+var SECS = [
+  { id:'loc', icon:'📍', title:'Miejscownik', en:'Locative', color:'#4A148C',
+    th:{
+      intro:{pl:'Miejscownik odpowiada na pytania GDZIE? O KIM? O CZYM? Używamy go ZAWSZE z przyimkiem.',en:'The Locative answers WHERE? ABOUT WHOM/WHAT? Always with a preposition.'},
+      blocks:[
+        {badge:'📍',name:"w / na + miejscownik",nameEn:"in/on + locative",color:'#4A148C',bg:'#F3E5F5',
+          rule:"'w' = wewnątrz; 'na' = na powierzchni/piętrze. Rzeczownik zmienia końcówkę!",ruleEn:"'w'=inside; 'na'=on a surface. Noun changes ending!",
+          sigs:['w domu','w mieście','na stole','na piętrze'],sigsEn:['at home','in the city','on the table','on the floor'],
+          exs:[{pl:'Pracuję w biurze na piętrze.',en:'I work in an office upstairs.',tag:'w/na + miejscownik'}]},
+        {badge:'💭',name:"o + miejscownik",nameEn:"about + locative",color:'#0D47A1',bg:'#E3F2FD',
+          rule:"'o' + miejscownik = mówić/myśleć O KIM/O CZYM.",ruleEn:"'o' + locative = to talk/think ABOUT someone/something.",
+          sigs:['o pracy','o filmie','myśleć o'],sigsEn:['about work','about the movie','to think about'],
+          exs:[{pl:'Myślę o nowej pracy.',en:'I think about the new job.',tag:'o + miejscownik'}]}
+      ],
+      tbl:[
+        {b:'miasto (n.)',f:'w mieście',e:'in the city',n:'-o→-e'},
+        {b:'stół (m.)',f:'na stole',e:'on the table',n:'-ół→-ole'},
+        {b:'biuro (n.)',f:'w biurze',e:'in the office',n:'-o→-e'},
+        {b:'dom (m.)',f:'w domu',e:'in the house',n:'-Ø→-u'},
+        {b:'kobieta (f.)',f:'o kobiecie',e:'about a woman',n:'-a→-ie'}
+      ],
+      tip:{pl:"💡 GDZIE? lub O KIM/CZYM? → przyimek (w, na, o) + miejscownik.",en:"💡 WHERE? or ABOUT WHOM/WHAT? → preposition + locative."}
+    },
+    exs:[
+      {id:'l1',type:'ch',q:'Marek pracuje ___ (biuro) na drugim piętrze.',en:'Marek works in an office on the second floor.',tag:'loc',tn:'📍 w + miejscownik (biuro→biurze)',tne:'w + locative: w biurze',opts:['w biuro','w biurze','do biura','z biura'],ans:'w biurze',hint:'w + miejscownik: biuro → biurze',exp:'Lokalizacja → w biurze',expe:'w + locative: w biurze'},
+      {id:'l2',type:'ch',q:'Wieczorem odpoczywam ___ (kanapa).',en:'I rest on the couch in the evening.',tag:'loc',tn:'📍 na + miejscownik (kanapa→kanapie)',tne:'na + locative: na kanapie',opts:['na kanapę','na kanapie','na kanapa','do kanapy'],ans:'na kanapie',hint:'na + miejscownik: kanapa → kanapie',exp:'na kanapie (miejscownik)',expe:'na + locative: na kanapie'},
+      {id:'l3',type:'ch',q:'Rozmawialiśmy ___ (nowy projekt) cały wieczór.',en:'We talked about the new project all evening.',tag:'loc',tn:'💭 o + miejscownik (projekt→projekcie)',tne:'About → o + locative',opts:['o nowy projekt','o nowym projekcie','na nowy projekt','z nowym projektem'],ans:'o nowym projekcie',hint:'o + miejscownik: projekt → projekcie',exp:'o nowym projekcie (miejscownik)',expe:'o + locative: o projekcie'},
+      {id:'l4',type:'ch',q:'Klucze leżą ___ (stół) w przedpokoju.',en:'The keys are on the table in the hallway.',tag:'loc',tn:'📍 na + miejscownik (stół→stole)',tne:'na + locative: na stole',opts:['na stół','na stole','na stoła','w stole'],ans:'na stole',hint:'na + miejscownik: stół → stole',exp:'na stole (miejscownik)',expe:'na + locative: na stole'},
+      {id:'l5',type:'ch',q:'Mieszkam ___ (mała wioska) niedaleko Krakowa.',en:'I live in a small village near Kraków.',tag:'loc',tn:'📍 w + miejscownik z przymiotnikiem',tne:'w + locative with adjective',opts:['w mała wioska','w małej wiosce','w małą wioskę','do małej wioski'],ans:'w małej wiosce',hint:'mała→małej, wioska→wiosce',exp:'w małej wiosce (miejscownik)',expe:'w + locative: w małej wiosce'},
+      {id:'l6',type:'ch',q:'Czekam ___ (przystanek) od dziesięciu minut.',en:"I've been waiting at the stop for ten minutes.",tag:'loc',tn:'📍 na + miejscownik (przystanek→przystanku)',tne:'na + locative: na przystanku',opts:['na przystanek','na przystanku','do przystanku','z przystanku'],ans:'na przystanku',hint:'na + miejscownik: przystanek → przystanku',exp:'na przystanku (miejscownik)',expe:'na + locative: na przystanku'},
+      {id:'l7',type:'ch',q:'Nigdy nie myślę ___ (przeszłość).',en:'I never think about the past.',tag:'loc',tn:'💭 o + miejscownik (przeszłość→przeszłości)',tne:'o + locative: o przeszłości',opts:['o przeszłość','o przeszłości','przeszłość','z przeszłością'],ans:'o przeszłości',hint:'o + miejscownik: przeszłość → przeszłości',exp:'o przeszłości (miejscownik)',expe:'o + locative: o przeszłości'},
+      {id:'l8',type:'ch',q:'Babcia opowiada ___ (swoje dzieciństwo) wnukom.',en:'Grandma tells her grandchildren about her childhood.',tag:'loc',tn:'💭 o + miejscownik (dzieciństwo→dzieciństwie)',tne:'o + locative: o swoim dzieciństwie',opts:['o swoje dzieciństwo','o swoim dzieciństwie','swoje dzieciństwo','ze swoim dzieciństwem'],ans:'o swoim dzieciństwie',hint:'o + miejscownik: dzieciństwo → dzieciństwie',exp:'o swoim dzieciństwie (miejscownik)',expe:'o + locative: o swoim dzieciństwie'},
+      {id:'l9',type:'ec',q:'Marek myśli o praca cały czas.',en:'Marek thinks about work all the time.',tag:'loc',tn:'💭 o + miejscownik: praca→pracy',tne:'o + locative: praca→pracy',err:'o praca',cor:'o pracy',exp:'o + miejscownik: praca → pracy',expe:'o + locative: praca → pracy'},
+      {id:'l10',type:'ec',q:'Dokumenty są w szafa w biurze.',en:'The documents are in the cabinet.',tag:'loc',tn:'📍 w + miejscownik: szafa→szafie',tne:'w + locative: szafa→szafie',err:'w szafa',cor:'w szafie',exp:'w + miejscownik: szafa → szafie',expe:'w + locative: szafa → szafie'},
+      {id:'l11',type:'ec',q:'Rower stoi na podwórko za domem.',en:'The bike is in the yard.',tag:'loc',tn:'📍 na + miejscownik: podwórko→podwórku',tne:'na + locative: podwórko→podwórku',err:'na podwórko',cor:'na podwórku',exp:'na + miejscownik: podwórko → podwórku',expe:'na + locative: podwórko → podwórku'},
+      {id:'l12',type:'ec',q:'Lubię czytać o historia starożytna.',en:'I like reading about ancient history.',tag:'loc',tn:'💭 o + miejscownik: historia→historii',tne:'o + locative: historia→historii',err:'o historia',cor:'o historii',exp:'o + miejscownik: historia → historii',expe:'o + locative: historia → historii'},
+      {id:'l13',type:'tr',q:'Klucze są w torbie.',en:'The keys are in the bag.',instr:'Zmień "być" na "leżeć"',instrEn:'Change "to be" to "to lie"',tag:'loc',tn:'📍 w torbie zostaje miejscownikiem',tne:'w torbie stays locative',opts:['Klucze leżą w torbie.','Klucze leżą w torbę.','Klucze leżą do torby.','Klucze leżą z torby.'],ans:'Klucze leżą w torbie.',hint:'Zmienia się czasownik, przypadek zostaje',exp:'w torbie (miejscownik) bez zmian',expe:'Static verbs + same locative'},
+      {id:'l14',type:'tr',q:'Myślę o nowej pracy.',en:"I'm thinking about the new job.",instr:'Zmień "myśleć" na "rozmawiać"',instrEn:'Change to "rozmawiać o"',tag:'loc',tn:'💭 oba czasowniki + o + miejscownik',tne:'Both verbs require o + locative',opts:['Rozmawiam o nową pracę.','Rozmawiam o nowej pracy.','Rozmawiam nowa praca.','Rozmawiam z nową pracą.'],ans:'Rozmawiam o nowej pracy.',hint:'rozmawiać o też + miejscownik',exp:'myśleć/rozmawiać o → miejscownik',expe:'Both verbs + locative'},
+      {id:'l15',type:'sb',instr:'Zbuduj zdanie',instrEn:'Build a sentence',en:'My grandmother lives in a big house by the lake.',tag:'loc',tn:'📍 w dużym domu (locative)',tne:'w + locative: w dużym domu',pieces:['Moja','babcia','mieszka','w dużym domu','nad jeziorem','.'],ans:'Moja babcia mieszka w dużym domu nad jeziorem.',hint:'w + przymiotnik+rzeczownik (miejscownik)',exp:'w dużym domu (miejscownik)',expe:'w + locative: w dużym domu'},
+      {id:'l16',type:'sb',instr:'Zbuduj zdanie',instrEn:'Build a sentence',en:'We talk about an important decision at the meeting.',tag:'loc',tn:'💭 o ważnej decyzji + na spotkaniu',tne:'Two locative phrases',pieces:['Rozmawiamy','o','ważnej','decyzji','na','spotkaniu','.'],ans:'Rozmawiamy o ważnej decyzji na spotkaniu.',hint:'o + (miejscownik) + na + (miejscownik)',exp:'Dwie frazy w miejscowniku',expe:'Two locative phrases'},
+      {id:'l17',type:'cl',instr:'Wybierz właściwą formę',instrEn:'Choose the correct locative form',tag:'mixed',tn:'⚡ Wybierz prawidłową formę',tne:'Choose the correct form',items:[
+        {s:'Siedzę ___ (krzesło).',sE:'I sit on a chair.',opts:['na krzesło','na krześle','na krześlem','na krzesłu'],cor:'na krześle'},
+        {s:'Bawię się ___ (ogród).',sE:'I play in the garden.',opts:['w ogród','w ogrodzie','w ogrodę','w ogrodowi'],cor:'w ogrodzie'},
+        {s:'Myślę ___ (przyszłość).',sE:'I think about the future.',opts:['o przyszłość','o przyszłości','o przyszłością','o przyszłościom'],cor:'o przyszłości'},
+        {s:'Obraz wisi ___ (ściana).',sE:'The picture hangs on the wall.',opts:['na ścianę','na ścianie','na ścianą','na ścianowi'],cor:'na ścianie'},
+        {s:'Mieszkam ___ (Warszawa).',sE:'I live in Warsaw.',opts:['w Warszawę','w Warszawie','w Warszawą','do Warszawy'],cor:'w Warszawie'}
+      ]}
+    ]
+  },
+  { id:'gen', icon:'🔗', title:'Dopełniacz', en:'Genitive', color:'#E65100',
+    th:{
+      intro:{pl:"Dopełniacz odpowiada na pytania KOGO? CZEGO? Używamy go po przeczeniu 'nie' i po niektórych czasownikach.",en:"The Genitive answers WHOM? WHAT (of)? Used after 'nie' and after certain verbs."},
+      blocks:[
+        {badge:'🚫',name:'Przeczenie + dopełniacz',nameEn:'Negation + genitive',color:'#E65100',bg:'#FFF3E0',
+          rule:"Po 'nie' rzeczownik ZAWSZE jest w dopełniaczu!",ruleEn:"After 'nie' the noun is ALWAYS in genitive!",
+          sigs:['nie mam','nie szukam','nie lubię','nie widzę'],sigsEn:["don't have","not looking","don't like","don't see"],
+          exs:[{pl:'Nie mam czasu.',en:"I don't have time.",tag:'nie mam + czasu'}]},
+        {badge:'🔗',name:'Czasowniki + dopełniacz',nameEn:'Verbs + genitive',color:'#B45309',bg:'#FFFBEB',
+          rule:'szukać, słuchać, używać, bać się, uczyć się, potrzebować + dopełniacz.',ruleEn:'szukać, słuchać, używać, bać się, uczyć się, potrzebować + genitive.',
+          sigs:['szukać czegoś','słuchać muzyki','bać się','potrzebować','uczyć się'],sigsEn:['to look for','to listen to','to fear','to need','to study'],
+          exs:[{pl:'Słucham muzyki.',en:'I listen to music.',tag:'słuchać + muzyki'}]}
+      ],
+      tbl:[
+        {b:'czas (m.)',f:'czasu',e:'of time',n:'-Ø→-u'},
+        {b:'muzyka (f.)',f:'muzyki',e:'of music',n:'-a→-i'},
+        {b:'praca (f.)',f:'pracy',e:'of work',n:'-a→-y'},
+        {b:'klucze (pl.)',f:'kluczy',e:'of keys',n:'-e→-y'},
+        {b:'pieniądze (pl.)',f:'pieniędzy',e:'of money',n:'nieregularny'}
+      ],
+      tip:{pl:"💡 'nie mam X' → X zawsze w dopełniaczu: 'Mam czas' → 'Nie mam czasu'.",en:"💡 'nie mam X' → X always in genitive: 'Mam czas' → 'Nie mam czasu'."}
+    },
+    exs:[
+      {id:'g1',type:'ch',q:'Marek nigdy nie szuka ___ (klucze) długo.',en:'Marek never searches for his keys for long.',tag:'gen',tn:"🔗 'szukać' = dopełniacz",tne:"'szukać' + genitive",opts:['klucze','kluczy','kluczom','kluczami'],ans:'kluczy',hint:'szukać + dopełniacz: klucze → kluczy',exp:"'szukać' + dopełniacz: kluczy",expe:"'szukać' + genitive: kluczy"},
+      {id:'g2',type:'ch',q:'Nie mam ___ (czas) na długą rozmowę.',en:"I don't have time for a long conversation.",tag:'gen',tn:'🚫 nie mam + dopełniacz',tne:"'nie mam' + genitive",opts:['czas','czasu','czasowi','czasem'],ans:'czasu',hint:'nie mam + dopełniacz: czas → czasu',exp:'Przeczenie → czasu',expe:'Negation → genitive: czasu'},
+      {id:'g3',type:'ch',q:'W autobusie zawsze słucha ___ (muzyka).',en:'On the bus he always listens to music.',tag:'gen',tn:"🔗 'słuchać' = dopełniacz",tne:"'słuchać' = genitive",opts:['muzyka','muzykę','muzyki','muzyką'],ans:'muzyki',hint:'słuchać + dopełniacz: muzyka → muzyki',exp:"'słuchać' + dopełniacz: muzyki",expe:"'słuchać' + genitive: muzyki"},
+      {id:'g4',type:'ch',q:'Nie lubię ___ (bałagan) na biurku.',en:"I don't like a mess on the desk.",tag:'gen',tn:'🚫 nie lubię + dopełniacz',tne:'Negation + genitive',opts:['bałagan','bałaganu','bałaganowi','bałaganem'],ans:'bałaganu',hint:'nie lubię + dopełniacz: bałagan → bałaganu',exp:'Przeczenie → bałaganu',expe:'Negation → genitive: bałaganu'},
+      {id:'g5',type:'ch',q:'Uczę się ___ (polski język) od dwóch lat.',en:"I've been learning Polish for two years.",tag:'gen',tn:"🔗 'uczyć się' = dopełniacz",tne:"'uczyć się' = genitive",opts:['polski język','polskiego języka','polskiemu językowi','polskim językiem'],ans:'polskiego języka',hint:'uczyć się + dopełniacz: polski→polskiego, język→języka',exp:"'uczyć się' + dopełniacz: polskiego języka",expe:"'uczyć się' + genitive"},
+      {id:'g6',type:'ch',q:'Dzieci się ___ (ciemność) bardzo boją.',en:'Children are very afraid of the dark.',tag:'gen',tn:"🔗 'bać się' = dopełniacz",tne:"'bać się' = genitive",opts:['ciemność','ciemności','ciemnością','ciemnościom'],ans:'ciemności',hint:'bać się + dopełniacz: ciemność → ciemności',exp:"'bać się' + dopełniacz: ciemności",expe:"'bać się' + genitive: ciemności"},
+      {id:'g7',type:'ch',q:'Nie pamiętam ___ (jego adres).',en:"I don't remember his address.",tag:'gen',tn:'🚫 nie pamiętam + dopełniacz',tne:'Negation + genitive',opts:['jego adres','jego adresu','jego adresowi','jego adresem'],ans:'jego adresu',hint:'nie pamiętam + dopełniacz: adres → adresu',exp:'Przeczenie → jego adresu',expe:'Negation → genitive: jego adresu'},
+      {id:'g8',type:'ch',q:'Te dzieci potrzebują ___ (pomoc).',en:'These children need help.',tag:'gen',tn:"🔗 'potrzebować' = dopełniacz",tne:"'potrzebować' = genitive",opts:['pomoc','pomocy','pomocą','pomocom'],ans:'pomocy',hint:'potrzebować + dopełniacz: pomoc → pomocy',exp:"'potrzebować' + dopełniacz: pomocy",expe:"'potrzebować' + genitive: pomocy"},
+      {id:'g9',type:'ec',q:'Codziennie używam komputer do pracy.',en:'I use a computer for work every day.',tag:'gen',tn:"🔗 'używać' + dopełniacz: komputer→komputera",tne:"'używać' requires genitive",err:'używam komputer',cor:'używam komputera',exp:"'używać' + dopełniacz: komputera",expe:"'używać' + genitive: komputera"},
+      {id:'g10',type:'ec',q:'Moja siostra boi się pająki.',en:'My sister is afraid of spiders.',tag:'gen',tn:"🔗 'bać się' + dopełniacz: pająki→pająków",tne:"'bać się' requires genitive",err:'boi się pająki',cor:'boi się pająków',exp:"'bać się' + dopełniacz: pająków",expe:"'bać się' + genitive: pająków"},
+      {id:'g11',type:'ec',q:'Nie mamy pieniądze na wakacje.',en:"We don't have money for a holiday.",tag:'gen',tn:'🚫 nie mamy + dopełniacz: pieniądze→pieniędzy',tne:'Negation → genitive: pieniędzy',err:'Nie mamy pieniądze',cor:'Nie mamy pieniędzy',exp:'Przeczenie → dopełniacz: pieniędzy',expe:'Negation → genitive: pieniędzy'},
+      {id:'g12',type:'ec',q:'Te rośliny potrzebują woda codziennie.',en:'These plants need water every day.',tag:'gen',tn:"🔗 'potrzebować' + dopełniacz: woda→wody",tne:"'potrzebować' requires genitive",err:'potrzebują woda',cor:'potrzebują wody',exp:"'potrzebować' + dopełniacz: wody",expe:"'potrzebować' + genitive: wody"},
+      {id:'g13',type:'tr',q:'Mam dobry telefon.',en:'I have a good phone.',instr:'Zmień na przeczące',instrEn:'Change to negative',tag:'gen',tn:'🚫 biernik → dopełniacz po przeczeniu',tne:'Accusative → genitive after negation',opts:['Nie mam dobry telefon.','Nie mam dobrego telefonu.','Nie mam dobremu telefonowi.','Nie mam dobrym telefonem.'],ans:'Nie mam dobrego telefonu.',hint:'dobry telefon (biernik) → dobrego telefonu (dopełniacz)',exp:'Po przeczeniu: dobrego telefonu',expe:'Negation: dobrego telefonu'},
+      {id:'g14',type:'tr',q:'Lubię ten serial.',en:'I like this TV show.',instr:'Zmień "lubić" na "nie lubić"',instrEn:'Change to negative',tag:'gen',tn:'🚫 biernik → dopełniacz po przeczeniu',tne:'Accusative → genitive after negation',opts:['Nie lubię ten serial.','Nie lubię tego serialu.','Nie lubię temu serialowi.','Nie lubię tym serialem.'],ans:'Nie lubię tego serialu.',hint:'ten serial (biernik) → tego serialu (dopełniacz)',exp:'Po przeczeniu: tego serialu',expe:'Negation: tego serialu'},
+      {id:'g15',type:'sb',instr:'Zbuduj zdanie',instrEn:'Build a sentence',en:"I don't have enough money for a new car.",tag:'gen',tn:'🚫 pieniędzy (dopełniacz)',tne:'Negation → genitive: pieniędzy',pieces:['Nie','mam','wystarczająco','pieniędzy','na','nowy','samochód','.'],ans:'Nie mam wystarczająco pieniędzy na nowy samochód.',hint:'Nie mam + pieniędzy (dopełniacz)',exp:"'nie mam' + dopełniacz: pieniędzy",expe:"'nie mam' + genitive: pieniędzy"},
+      {id:'g16',type:'sb',instr:'Zbuduj zdanie',instrEn:'Build a sentence',en:"He never listens to his parents' advice.",tag:'gen',tn:"🔗 słucha rady (dopełniacz)",tne:"'słuchać' requires genitive",pieces:['On','nigdy','nie','słucha','rady','swoich','rodziców','.'],ans:'On nigdy nie słucha rady swoich rodziców.',hint:'słucha + rady (dopełniacz)',exp:"'słuchać' + dopełniacz: rady",expe:"'słuchać' + genitive: rady"},
+      {id:'g17',type:'cl',instr:'Wybierz właściwą formę',instrEn:'Choose correct genitive form',tag:'mixed',tn:'⚡ Wybierz prawidłową formę',tne:'Choose the correct form',items:[
+        {s:'Nie mam ___ (czas).',sE:"I don't have time.",opts:['czas','czasu','czasowi','czasem'],cor:'czasu'},
+        {s:'Szukam ___ (mój portfel).',sE:"I'm looking for my wallet.",opts:['mój portfel','mojego portfela','mojemu portfelowi','moim portfelem'],cor:'mojego portfela'},
+        {s:'Boję się ___ (pająki).',sE:"I'm afraid of spiders.",opts:['pająki','pająków','pająkom','pająkami'],cor:'pająków'},
+        {s:'Nie lubię ___ (zimna pogoda).',sE:"I don't like cold weather.",opts:['zimna pogoda','zimnej pogody','zimnej pogodzie','zimną pogodą'],cor:'zimnej pogody'},
+        {s:'Słuchamy ___ (podcast).',sE:'We listen to a podcast.',opts:['podcast','podcastu','podcastowi','podcastem'],cor:'podcastu'}
+      ]}
+    ]
+  },
+  { id:'acc', icon:'🎯', title:'Biernik', en:'Accusative', color:'#1B5E20',
+    th:{
+      intro:{pl:'Biernik odpowiada na pytania KOGO? CO? Używamy go dla dopełnienia bliższego — tego, na co działa czynność.',en:'The Accusative answers WHOM? WHAT? It is the direct object of a verb.'},
+      blocks:[
+        {badge:'🎯',name:'Dopełnienie bliższe',nameEn:'Direct object',color:'#1B5E20',bg:'#E8F5E9',
+          rule:'mieć, pić, jeść, lubić, widzieć, czytać, kochać + biernik.',ruleEn:'mieć, pić, jeść, lubić, widzieć, czytać, kochać + accusative.',
+          sigs:['mam (telefon)','piję (kawę)','czytam (książkę)','lubię (muzykę)'],sigsEn:['I have','I drink','I read','I like'],
+          exs:[{pl:'Marek pije kawę co rano.',en:'Marek drinks coffee every morning.',tag:'pić + kawę'}]}
+      ],
+      tbl:[
+        {b:'kawa (f.)',f:'kawę',e:'coffee',n:'-a→-ę'},
+        {b:'książka (f.)',f:'książkę',e:'a book',n:'-a→-ę'},
+        {b:'telefon (m.nż.)',f:'telefon',e:'a phone',n:'bez zmiany'},
+        {b:'kot (m.ż.)',f:'kota',e:'a cat',n:'-Ø→-a'},
+        {b:'jabłko (n.)',f:'jabłko',e:'an apple',n:'bez zmiany'}
+      ],
+      tip:{pl:'💡 Rzeczowniki męskie NIEŻYWOTNE: biernik = nominativ (bez zmiany). Żywotne i żeńskie zmieniają formę.',en:'💡 Masculine INANIMATE nouns: accusative = nominative (no change). Animate and feminine change.'}
+    },
+    exs:[
+      {id:'a1',type:'ch',q:'Marek codziennie pije ___ (kawa) rano.',en:'Marek drinks coffee every morning.',tag:'acc',tn:'🎯 pić + biernik (kawa→kawę)',tne:'Direct object: kawę',opts:['kawa','kawę','kawy','kawą'],ans:'kawę',hint:'pić + biernik: kawa → kawę',exp:"'pić' + biernik: kawę",expe:"'pić' + accusative: kawę"},
+      {id:'a2',type:'ch',q:'Marek czyta ___ (interesująca książka).',en:'Marek reads an interesting book.',tag:'acc',tn:'🎯 czytać + biernik (f.)',tne:'Both adjective and noun change',opts:['interesująca książka','interesującą książkę','interesującej książki','interesującą książką'],ans:'interesującą książkę',hint:'książka→książkę, interesująca→interesującą',exp:"'czytać' + biernik: interesującą książkę",expe:"'czytać' + accusative"},
+      {id:'a3',type:'ch',q:'Bardzo lubię ___ (ten nowy film).',en:'I really like this new movie.',tag:'acc',tn:'🎯 lubić + biernik (film nieżywotny = bez zmiany)',tne:'Inanimate masc. = unchanged',opts:['ten nowy film','tego nowego filmu','temu nowemu filmowi','tym nowym filmem'],ans:'ten nowy film',hint:'Nieżywotny m. w bierniku = nominativ',exp:"'lubić' + biernik (nieżywotny m.): ten nowy film",expe:'Inanimate masc. = unchanged'},
+      {id:'a4',type:'ch',q:'Czy widzisz ___ (ten czarny kot)?',en:'Do you see that black cat?',tag:'acc',tn:'🎯 widzieć + biernik (kot żywotny → zmiana!)',tne:'Animate masc.: tego czarnego kota',opts:['ten czarny kot','tego czarnego kota','temu czarnemu kotu','tym czarnym kotem'],ans:'tego czarnego kota',hint:'Żywotny m.: kot → kota',exp:"'widzieć' + biernik (żywotny m.): tego czarnego kota",expe:'Animate masc. accusative: tego czarnego kota'},
+      {id:'a5',type:'ch',q:'Zawsze noszę ___ (czarna kurtka) zimą.',en:'I always wear a black jacket in winter.',tag:'acc',tn:'🎯 nosić + biernik (kurtka→kurtkę)',tne:'Feminine accusative: czarną kurtkę',opts:['czarna kurtka','czarną kurtkę','czarnej kurtki','czarną kurtką'],ans:'czarną kurtkę',hint:'nosić + biernik: czarna kurtka → czarną kurtkę',exp:"'nosić' + biernik: czarną kurtkę",expe:"'nosić' + accusative: czarną kurtkę"},
+      {id:'a6',type:'ch',q:'Spotykam ___ (mój kolega) co piątek.',en:'I meet my friend every Friday.',tag:'acc',tn:'🎯 spotykać + biernik (kolega żywotny → zmiana!)',tne:'Animate masc.: mojego kolegę',opts:['mój kolega','mojego kolegę','mojemu koledze','moim kolegą'],ans:'mojego kolegę',hint:'Żywotny m.: kolega → kolegę',exp:"'spotykać' + biernik (żywotny m.): mojego kolegę",expe:'Animate masc. accusative: mojego kolegę'},
+      {id:'a7',type:'ch',q:'Gotuję ___ (pyszny obiad) dla rodziny.',en:'I cook a delicious dinner for the family.',tag:'acc',tn:'🎯 gotować + biernik (obiad nieżywotny = bez zmiany)',tne:'Inanimate masc. = unchanged',opts:['pyszny obiad','pysznego obiadu','pysznemu obiadowi','pysznym obiadem'],ans:'pyszny obiad',hint:'Nieżywotny m. = nominativ: pyszny obiad',exp:"'gotować' + biernik (nieżywotny m.): pyszny obiad",expe:'Inanimate masc. = unchanged'},
+      {id:'a8',type:'ch',q:'Karmię ___ (mój pies) dwa razy dziennie.',en:'I feed my dog twice a day.',tag:'acc',tn:'🎯 karmić + biernik (pies żywotny → zmiana!)',tne:'Animate masc.: mojego psa',opts:['mój pies','mojego psa','mojemu psu','moim psem'],ans:'mojego psa',hint:'Żywotny m.: pies → psa',exp:"'karmić' + biernik (żywotny m.): mojego psa",expe:'Animate masc. accusative: mojego psa'},
+      {id:'a9',type:'ec',q:'Spotykam moja siostra w piątek.',en:"I'm meeting my sister on Friday.",tag:'acc',tn:'🎯 spotykać + biernik: moja siostra → moją siostrę',tne:'Accusative: moja siostra → moją siostrę',err:'moja siostra',cor:'moją siostrę',exp:"'spotykać' + biernik: moją siostrę",expe:"'spotykać' + accusative: moją siostrę"},
+      {id:'a10',type:'ec',q:'Widzę pies przed domem.',en:'I see a dog in front of the house.',tag:'acc',tn:'🎯 widzieć + biernik: pies → psa (żywotny!)',tne:'Animate: pies → psa',err:'widzę pies',cor:'widzę psa',exp:'Żywotny m. w bierniku: pies → psa',expe:'Animate masc. accusative: pies → psa'},
+      {id:'a11',type:'ec',q:'Kupuję nowa sukienka na imprezę.',en:"I'm buying a new dress for the party.",tag:'acc',tn:'🎯 kupować + biernik: nowa sukienka → nową sukienkę',tne:'Accusative: nowa sukienka → nową sukienkę',err:'nowa sukienka',cor:'nową sukienkę',exp:"'kupować' + biernik: nową sukienkę",expe:"'kupować' + accusative: nową sukienkę"},
+      {id:'a12',type:'ec',q:'Znam ten student z uniwersytetu.',en:'I know this student from university.',tag:'acc',tn:'🎯 znać + biernik: ten student → tego studenta (żywotny!)',tne:'Animate: student → studenta',err:'znam ten student',cor:'znam tego studenta',exp:'Żywotny m. w bierniku: student → studenta',expe:'Animate masc. accusative: student → studenta'},
+      {id:'a13',type:'tr',q:'Widzę kota na podwórku.',en:'I see a cat in the yard.',instr:'Zmień l. pojedynczą na mnogą',instrEn:'Change to plural',tag:'acc',tn:'🎯 liczba mnoga biernik: koty',tne:'Plural animate accusative: koty',opts:['Widzę kotów na podwórku.','Widzę koty na podwórku.','Widzę kotom na podwórku.','Widzę kotami na podwórku.'],ans:'Widzę koty na podwórku.',hint:'Liczba mnoga biernika: koty',exp:'Biernik l.mn. (zwierzęta): koty',expe:'Plural accusative: koty'},
+      {id:'a14',type:'tr',q:'Widzę tę kobietę codziennie.',en:'I see that woman every day.',instr:'Zmień "widzieć" na "znać"',instrEn:'Change to "znać"',tag:'acc',tn:'🎯 oba czasowniki + biernik: tę kobietę',tne:'Both verbs take accusative: tę kobietę',opts:['Znam ta kobieta codziennie.','Znam tę kobietę codziennie.','Znam tej kobiety codziennie.','Znam tą kobietą codziennie.'],ans:'Znam tę kobietę codziennie.',hint:'widzieć i znać oba + biernik: tę kobietę',exp:'Biernik żywotny żeński: tę kobietę',expe:'Animate feminine accusative: tę kobietę'},
+      {id:'a15',type:'sb',instr:'Zbuduj zdanie',instrEn:'Build a sentence',en:'I am buying a new red car.',tag:'acc',tn:'🎯 samochód (nieżywotny m. = bez zmiany)',tne:'Inanimate masc. = unchanged',pieces:['Kupuję','nowy','czerwony','samochód','.'],ans:'Kupuję nowy czerwony samochód.',hint:'nieżywotny m. nie zmienia formy w bierniku',exp:"'kupować' + biernik (nieżywotny m.)",expe:'Inanimate masc. = unchanged'},
+      {id:'a16',type:'sb',instr:'Zbuduj zdanie',instrEn:'Build a sentence',en:'The children love their new puppy very much.',tag:'acc',tn:'🎯 szczeniaka (żywotny m. → zmiana)',tne:'Animate masc. changes',pieces:['Dzieci','bardzo','kochają','swojego','nowego','szczeniaka','.'],ans:'Dzieci bardzo kochają swojego nowego szczeniaka.',hint:'kochać + biernik (żywotny m.): szczeniaka',exp:"'kochać' + biernik (żywotny m.): szczeniaka",expe:'Animate masc. accusative: swojego nowego szczeniaka'},
+      {id:'a17',type:'cl',instr:'Biernik — nieżywotny czy żywotny?',instrEn:'Inanimate or animate accusative?',tag:'mixed',tn:'⚡ Żywotne zmieniają formę, nieżywotne NIE',tne:'Animate nouns change, inanimate do not',items:[
+        {s:'Mam nowy ___ (telefon).',sE:'I have a new phone.',opts:['telefon','telefonu','telefonowi','telefonem'],cor:'telefon'},
+        {s:'Widzę ___ (pies) w parku.',sE:'I see a dog in the park.',opts:['pies','psa','psu','psem'],cor:'psa'},
+        {s:'Lubię ___ (ten aktor).',sE:'I like that actor.',opts:['ten aktor','tego aktora','temu aktorowi','tym aktorem'],cor:'tego aktora'},
+        {s:'Czytam ___ (ciekawa książka).',sE:"I'm reading an interesting book.",opts:['ciekawa książka','ciekawą książkę','ciekawej książki','ciekawą książką'],cor:'ciekawą książkę'},
+        {s:'Oglądam ___ (nowy film).',sE:"I'm watching a new movie.",opts:['nowy film','nowego filmu','nowemu filmowi','nowym filmem'],cor:'nowy film'}
+      ]}
+    ]
+  },
+  { id:'ins', icon:'🛠️', title:'Narzędnik', en:'Instrumental', color:'#0D47A1',
+    th:{
+      intro:{pl:'Narzędnik odpowiada na pytania Z KIM? Z CZYM? KIM? CZYM? Używamy go z przyimkiem "z" i po czasowniku "być".',en:'The Instrumental answers WITH WHOM? WITH WHAT? Used with "z" and after "być".'},
+      blocks:[
+        {badge:'🛠️',name:'z + narzędnik',nameEn:'with + instrumental',color:'#0D47A1',bg:'#E3F2FD',
+          rule:"'z' + narzędnik = razem z kimś/czymś.",ruleEn:"'z' + instrumental = together with someone/something.",
+          sigs:['z Markiem','z kawą','z rodziną','z przyjacielem'],sigsEn:['with Marek','with coffee','with family','with a friend'],
+          exs:[{pl:'Piję kawę z mlekiem.',en:'I drink coffee with milk.',tag:'z + narzędnik (mleko→mlekiem)'}]},
+        {badge:'💼',name:'być + narzędnik (zawód)',nameEn:'być + instrumental (profession)',color:'#7B1FA2',bg:'#F3E5F5',
+          rule:"Po 'być' zawód opisujemy narzędnikiem: On jest lekarzem.",ruleEn:"After 'być' professions use instrumental: On jest lekarzem.",
+          sigs:['jest lekarzem','jest nauczycielem','jest studentem','jest kierowcą'],sigsEn:['is a doctor','is a teacher','is a student','is a driver'],
+          exs:[{pl:'Moja mama jest lekarką.',en:'My mother is a doctor.',tag:'być + narzędnik (lekarka→lekarką)'}]},
+        {badge:'🚂',name:'Środki transportu',nameEn:'Means of transport',color:'#00695C',bg:'#E0F2F1',
+          rule:'jechać autobusem, lecieć samolotem, płynąć statkiem.',ruleEn:'jechać autobusem, lecieć samolotem, płynąć statkiem.',
+          sigs:['autobusem','pociągiem','samolotem','taksówką'],sigsEn:['by bus','by train','by plane','by taxi'],
+          exs:[{pl:'Jadę do pracy autobusem.',en:'I go to work by bus.',tag:'narzędnik (autobus→autobusem)'}]}
+      ],
+      tbl:[
+        {b:'mleko (n.)',f:'z mlekiem',e:'with milk',n:'-o→-iem'},
+        {b:'przyjaciel (m.)',f:'z przyjacielem',e:'with a friend',n:'-Ø→-em'},
+        {b:'siostra (f.)',f:'z siostrą',e:'with a sister',n:'-a→-ą'},
+        {b:'lekarz (m.)',f:'jest lekarzem',e:'is a doctor',n:'-Ø→-em'},
+        {b:'nauczycielka (f.)',f:'jest nauczycielką',e:'is a teacher',n:'-a→-ą'}
+      ],
+      tip:{pl:'💡 Końcówki: -em/-iem (m./n.), -ą (f.), -ami (l.mn.). Zawsze pytaj: Z KIM? Z CZYM?',en:'💡 Endings: -em/-iem (m./n.), -ą (f.), -ami (pl.). Ask: WITH WHOM? WITH WHAT?'}
+    },
+    exs:[
+      {id:'i1',type:'ch',q:'Piję kawę ___ (mleko) każdego ranka.',en:'I drink coffee with milk every morning.',tag:'ins',tn:'🛠️ z + narzędnik (mleko→mlekiem)',tne:'z + instrumental: z mlekiem',opts:['z mleko','z mlekiem','z mleka','z mleką'],ans:'z mlekiem',hint:'z + narzędnik: mleko → mlekiem',exp:"'z' + narzędnik: z mlekiem",expe:'z + instrumental: z mlekiem'},
+      {id:'i2',type:'ch',q:'Idę do kina ___ (mój przyjaciel).',en:"I'm going to the cinema with my friend.",tag:'ins',tn:'🛠️ z + narzędnik (przyjaciel→przyjacielem)',tne:'z + instrumental: z przyjacielem',opts:['z mój przyjaciel','z moim przyjacielem','z mojego przyjaciela','z moim przyjacielu'],ans:'z moim przyjacielem',hint:'z + narzędnik: przyjaciel → przyjacielem',exp:"'z' + narzędnik: z moim przyjacielem",expe:'z + instrumental: z moim przyjacielem'},
+      {id:'i3',type:'ch',q:'Moja mama jest ___ (lekarka) od dziesięciu lat.',en:'My mother has been a doctor for ten years.',tag:'ins',tn:'💼 być + narzędnik (lekarka→lekarką)',tne:'być + instrumental: lekarką',opts:['lekarka','lekarką','lekarkę','lekarki'],ans:'lekarką',hint:'być + narzędnik: lekarka → lekarką',exp:"'być' + narzędnik: lekarką",expe:'być + instrumental: lekarką'},
+      {id:'i4',type:'ch',q:'Codziennie jeżdżę do pracy ___ (autobus).',en:'Every day I go to work by bus.',tag:'ins',tn:'🚂 środek transportu + narzędnik (autobus→autobusem)',tne:'Transport → instrumental: autobusem',opts:['autobus','autobusem','autobusowi','z autobusem'],ans:'autobusem',hint:'Środki transportu: autobus → autobusem',exp:'Środek transportu → narzędnik: autobusem',expe:'Transport → instrumental: autobusem'},
+      {id:'i5',type:'ch',q:'On chce zostać ___ (inżynier) po studiach.',en:'He wants to become an engineer after his studies.',tag:'ins',tn:'💼 zostać + narzędnik (inżynier→inżynierem)',tne:'zostać + instrumental: inżynierem',opts:['inżynier','inżynierem','inżyniera','inżynierowi'],ans:'inżynierem',hint:'zostać + narzędnik: inżynier → inżynierem',exp:"'zostać' + narzędnik: inżynierem",expe:'zostać + instrumental: inżynierem'},
+      {id:'i6',type:'ch',q:'Rozmawiałem ___ (moja siostra) przez telefon.',en:'I talked with my sister on the phone.',tag:'ins',tn:'🛠️ z + narzędnik (moja siostra→moją siostrą)',tne:'z + instrumental: z moją siostrą',opts:['z moja siostra','z moją siostrą','z mojej siostry','z moją siostrę'],ans:'z moją siostrą',hint:'z + narzędnik: moja siostra → moją siostrą',exp:"'z' + narzędnik: z moją siostrą",expe:'z + instrumental: z moją siostrą'},
+      {id:'i7',type:'ch',q:'Lecimy ___ (samolot) do Londynu.',en:"We're flying to London by plane.",tag:'ins',tn:'🚂 środek transportu + narzędnik (samolot→samolotem)',tne:'Transport → instrumental: samolotem',opts:['samolot','samolotem','samolocie','samolotu'],ans:'samolotem',hint:'Środki transportu: samolot → samolotem',exp:'Środek transportu → narzędnik: samolotem',expe:'Transport → instrumental: samolotem'},
+      {id:'i8',type:'ch',q:'Ona jest ___ (dobra nauczycielka) w tej szkole.',en:'She is a good teacher at this school.',tag:'ins',tn:'💼 być + narzędnik (nauczycielka→nauczycielką)',tne:'być + instrumental: nauczycielką',opts:['dobra nauczycielka','dobrą nauczycielką','dobrej nauczycielki','dobrą nauczycielkę'],ans:'dobrą nauczycielką',hint:'być + narzędnik: nauczycielka → nauczycielką',exp:"'być' + narzędnik: dobrą nauczycielką",expe:'być + instrumental: dobrą nauczycielką'},
+      {id:'i9',type:'ec',q:'Jadę do Krakowa pociąg.',en:"I'm going to Kraków by train.",tag:'ins',tn:'🚂 narzędnik: pociąg→pociągiem',tne:'Instrumental: pociąg→pociągiem',err:'pociąg',cor:'pociągiem',exp:'Środek transportu → narzędnik: pociągiem',expe:'Transport → instrumental: pociągiem'},
+      {id:'i10',type:'ec',q:'On jest dobry lekarz w tym szpitalu.',en:'He is a good doctor at this hospital.',tag:'ins',tn:'💼 być + narzędnik: lekarz→lekarzem',tne:'być + instrumental: lekarz→lekarzem',err:'dobry lekarz',cor:'dobrym lekarzem',exp:"'być' + narzędnik: dobrym lekarzem",expe:'być + instrumental: dobrym lekarzem'},
+      {id:'i11',type:'ec',q:'Piję herbatę z cukier.',en:'I drink tea with sugar.',tag:'ins',tn:'🛠️ z + narzędnik: cukier→cukrem',tne:'z + instrumental: cukier→cukrem',err:'z cukier',cor:'z cukrem',exp:"'z' + narzędnik: cukier → cukrem",expe:'z + instrumental: cukier → cukrem'},
+      {id:'i12',type:'ec',q:'Wczoraj rozmawiałam z moja mama.',en:'Yesterday I talked with my mum.',tag:'ins',tn:'🛠️ z + narzędnik: moja mama→moją mamą',tne:'z + instrumental: moja mama→moją mamą',err:'z moja mama',cor:'z moją mamą',exp:"'z' + narzędnik: moją mamą",expe:'z + instrumental: z moją mamą'},
+      {id:'i13',type:'tr',q:'On jest lekarzem.',en:'He is a doctor.',instr:'Zmień na rodzaj żeński',instrEn:'Change to feminine',tag:'ins',tn:'💼 być + narzędnik (f.)',tne:'być + instrumental, feminine form',opts:['Ona jest lekarka.','Ona jest lekarką.','Ona jest lekarkę.','Ona jest lekarki.'],ans:'Ona jest lekarką.',hint:'być + narzędnik: lekarka → lekarką',exp:"'być' + narzędnik (f.): lekarką",expe:'być + instrumental (f.): lekarką'},
+      {id:'i14',type:'tr',q:'Jadę do pracy samochodem.',en:"I drive to work.",instr:'Zmień środek transportu na "autobus"',instrEn:'Change transport to "autobus"',tag:'ins',tn:'🚂 narzędnik środka transportu',tne:'Instrumental of transport',opts:['Jadę do pracy autobus.','Jadę do pracy autobusem.','Jadę do pracy autobusowi.','Jadę do pracy autobusie.'],ans:'Jadę do pracy autobusem.',hint:'Środki transportu: autobus → autobusem',exp:'Środek transportu → narzędnik: autobusem',expe:'Transport → instrumental: autobusem'},
+      {id:'i15',type:'sb',instr:'Zbuduj zdanie',instrEn:'Build a sentence',en:'I am going to the park with my friend.',tag:'ins',tn:'🛠️ z moim przyjacielem (narzędnik)',tne:'z + instrumental: z moim przyjacielem',pieces:['Idę','do','parku','z','moim','przyjacielem','.'],ans:'Idę do parku z moim przyjacielem.',hint:'Podmiot + idę + do parku + z + narzędnik',exp:"'z' + narzędnik: z moim przyjacielem",expe:'z + instrumental: z moim przyjacielem'},
+      {id:'i16',type:'sb',instr:'Zbuduj zdanie',instrEn:'Build a sentence',en:'My brother is an engineer and works in Warsaw.',tag:'ins',tn:'💼 jest inżynierem (narzędnik)',tne:'być + instrumental: inżynierem',pieces:['Mój','brat','jest','inżynierem','i','pracuje','w','Warszawie','.'],ans:'Mój brat jest inżynierem i pracuje w Warszawie.',hint:'być + narzędnik: inżynier → inżynierem',exp:"'być' + narzędnik: inżynierem",expe:'być + instrumental: inżynierem'},
+      {id:'i17',type:'cl',instr:'Wybierz właściwą formę narzędnika',instrEn:'Choose the correct instrumental form',tag:'mixed',tn:'⚡ Wybierz prawidłową formę narzędnika',tne:'Choose the correct instrumental form',items:[
+        {s:'Piję kawę ___ (mleko).',sE:'I drink coffee with milk.',opts:['mleko','mlekiem','mleka','mleku'],cor:'mlekiem'},
+        {s:'Jadę na lotnisko ___ (taksówka).',sE:"I'm going to the airport by taxi.",opts:['taksówka','taksówką','taksówki','taksówce'],cor:'taksówką'},
+        {s:'On jest ___ (dobry student).',sE:'He is a good student.',opts:['dobry student','dobrym studentem','dobrego studenta','dobremu studentowi'],cor:'dobrym studentem'},
+        {s:'Idę na spacer ___ (mój pies).',sE:"I'm going for a walk with my dog.",opts:['mój pies','z moim psem','z mojego psa','z moim psie'],cor:'z moim psem'},
+        {s:'Ona chce być ___ (aktorka).',sE:'She wants to be an actress.',opts:['aktorka','aktorką','aktorki','aktorkę'],cor:'aktorką'}
+      ]}
+    ]
+  },
+  { id:'mix', icon:'🔀', title:'Wszystkie Przypadki', en:'All Cases', color:'#9333EA',
+    th:{
+      intro:{pl:'Teraz przećwiczymy WSZYSTKIE cztery przypadki razem.',en:'Now practice ALL four cases together.'},
+      blocks:[
+        {badge:'🔀',name:'Szybkie przypomnienie',nameEn:'Quick reminder',color:'#9333EA',bg:'#FAF5FF',
+          rule:"Miejscownik=GDZIE? Dopełniacz=po przeczeniu. Biernik=dopełnienie bliższe. Narzędnik=Z KIM?/CZYM?",ruleEn:"Locative=WHERE? Genitive=after negation. Accusative=direct object. Instrumental=WITH WHOM?",
+          sigs:['w/na/o→miejs.','nie→dop.','lubię→bier.','z/być→nar.'],sigsEn:['prep→loc','negation→gen','verb→acc','with→ins'],
+          exs:[{pl:'Mieszkam w mieście, nie mam czasu, kupuję chleb, jadę autobusem.',en:'I live in the city, no time, I buy bread, I go by bus.',tag:'cztery przypadki'}]}
+      ],
+      tbl:[
+        {b:'GDZIE?/O CZYM?',f:'Miejscownik',e:'Locative',n:'zawsze z przyimkiem'},
+        {b:'KOGO?/CZEGO?',f:'Dopełniacz',e:'Genitive',n:'nie + czasowniki'},
+        {b:'KOGO?/CO?',f:'Biernik',e:'Accusative',n:'dopełnienie bliższe'},
+        {b:'Z KIM?/CZYM?',f:'Narzędnik',e:'Instrumental',n:'z/być/transport'}
+      ],
+      tip:{pl:"💡 'nie'?→dopełniacz. Przyimek w/na/o?→miejscownik. Przyimek 'z'/być?→narzędnik. Sam czasownik?→biernik.",en:"💡 'nie'?→genitive. w/na/o?→locative. 'z'/być?→instrumental. Verb alone?→accusative."}
+    },
+    exs:[] // filled below
+  },
+  { id:'vocab', icon:'🏠', title:'Słownictwo', en:'Vocabulary', color:'#92400E', type:'vocab',
+    words:[
+      {pl:'przedpokój',en:'hallway',ep:'Klucze leżą na stole w przedpokoju.',ee:'The keys are on the table in the hallway.'},
+      {pl:'bałagan',en:'mess, clutter',ep:'Nie lubię bałaganu na biurku.',ee:"I don't like a mess on the desk."},
+      {pl:'przystanek',en:'bus stop',ep:'Czekam na przystanku.',ee:"I'm waiting at the bus stop."},
+      {pl:'piętro',en:'floor (storey)',ep:'Pracuję na drugim piętrze.',ee:'I work on the second floor.'},
+      {pl:'kanapa',en:'couch, sofa',ep:'Odpoczywam na kanapie.',ee:'I rest on the couch.'},
+      {pl:'salon',en:'living room',ep:'W salonie stoi duża kanapa.',ee:"There's a big couch in the living room."},
+      {pl:'szukać + dop.',en:'to look for + gen.',ep:'Zawsze szuka kluczy rano.',ee:'He always looks for his keys in the morning.'},
+      {pl:'jechać + nar.',en:'to go by + instr.',ep:'Jadę do pracy autobusem.',ee:'I go to work by bus.'}
+    ]
+  },
+  { id:'dial', icon:'💬', title:'Dialog', en:'Dialogue', color:'#0F766E', type:'dial' },
+  { id:'sprint', icon:'⚡', title:'Sprint', en:'Sprint', color:'#7C3AED', type:'sprint' }
+];
+
+// fill mixed
+(function(){
+  var pool = [
+    {id:'mx1',type:'ch',q:'Codziennie kupuję ___ (świeże owoce) na rynku.',en:'I buy fresh fruit at the market every day.',tag:'acc',tn:'🎯 kupować + biernik',tne:'Direct object → accusative',opts:['świeże owoce','świeżych owoców','świeżym owocom','świeżymi owocami'],ans:'świeże owoce',hint:'kupować + biernik: owoce (nieżywotne)',exp:"'kupować' + biernik: świeże owoce",expe:'Direct object → accusative'},
+    {id:'mx2',type:'ch',q:'Nie pamiętam ___ (jego numer telefonu).',en:"I don't remember his phone number.",tag:'gen',tn:'🚫 nie pamiętam + dopełniacz',tne:'Negation + genitive',opts:['jego numer telefonu','jego numeru telefonu','jego numerowi telefonu','jego numerem telefonu'],ans:'jego numeru telefonu',hint:'nie pamiętam + dopełniacz: numer → numeru',exp:'Przeczenie → jego numeru',expe:'Negation → genitive'},
+    {id:'mx3',type:'ch',q:'Spotykamy się ___ (kawiarnia) na rogu.',en:"We're meeting at the café.",tag:'loc',tn:'📍 w + miejscownik',tne:'w + locative: w kawiarni',opts:['w kawiarnia','w kawiarni','do kawiarni','z kawiarni'],ans:'w kawiarni',hint:'w + miejscownik: kawiarnia → kawiarni',exp:'w kawiarni (miejscownik)',expe:'w + locative: w kawiarni'},
+    {id:'mx4',type:'ch',q:'Lubię ___ (ten stary park) niedaleko domu.',en:'I like this old park near my house.',tag:'acc',tn:'🎯 lubić + biernik (park nieżywotny)',tne:'Inanimate masc. = unchanged',opts:['ten stary park','tego starego parku','temu staremu parkowi','tym starym parkiem'],ans:'ten stary park',hint:'Nieżywotny m. w bierniku = nominativ',exp:"'lubić' + biernik (nieżywotny m.)",expe:'Inanimate masc. = unchanged'},
+    {id:'mx5',type:'ch',q:'Rozmawiamy ___ (nasze plany) na wieczór.',en:'We talk about our plans for the evening.',tag:'loc',tn:'💭 o + miejscownik',tne:'About → o + locative',opts:['o nasze plany','o naszych planach','nasze plany','z naszymi planami'],ans:'o naszych planach',hint:'o + miejscownik: plany → planach',exp:'o naszych planach (miejscownik)',expe:'o + locative'},
+    {id:'mx6',type:'ch',q:'Ona jest ___ (dobra studentka) na naszym wydziale.',en:'She is a good student at our faculty.',tag:'ins',tn:'💼 być + narzędnik (studentka→studentką)',tne:'być + instrumental',opts:['dobra studentka','dobrą studentką','dobrej studentki','dobrą studentkę'],ans:'dobrą studentką',hint:'być + narzędnik: studentka → studentką',exp:"'być' + narzędnik: dobrą studentką",expe:'być + instrumental: dobrą studentką'},
+    {id:'mx7',type:'ch',q:'Jadę na wakacje ___ (pociąg) przez całą noc.',en:"I'm going on holiday by train all night.",tag:'ins',tn:'🚂 środek transportu + narzędnik',tne:'Transport → instrumental: pociągiem',opts:['pociąg','pociągiem','pociągowi','pociągu'],ans:'pociągiem',hint:'Środki transportu: pociąg → pociągiem',exp:'Narzędnik środka transportu: pociągiem',expe:'Transport → instrumental: pociągiem'},
+    {id:'mx8',type:'ch',q:'Nie widzę ___ (twój samochód) na parkingu.',en:"I don't see your car in the parking lot.",tag:'gen',tn:'🚫 nie widzę + dopełniacz (NIE biernik!)',tne:'Negation → genitive, NOT accusative!',opts:['twój samochód','twojego samochodu','twojemu samochodowi','twoim samochodem'],ans:'twojego samochodu',hint:'Przeczenie: biernik → dopełniacz',exp:'Przeczenie: twój samochód → twojego samochodu',expe:'Negation: accusative → genitive'},
+    {id:'mx9',type:'ec',q:'Piszę do ciebie z moja żona.',en:"I'm writing to you with my wife.",tag:'ins',tn:'🛠️ z + narzędnik: moja żona→moją żoną',tne:'z + instrumental: moja żona→moją żoną',err:'z moja żona',cor:'z moją żoną',exp:"'z' + narzędnik: moją żoną",expe:'z + instrumental: z moją żoną'},
+    {id:'mx10',type:'ec',q:'Nie widzę żaden problem w twoim planie.',en:"I don't see any problem with your plan.",tag:'gen',tn:'🚫 nie widzę + dopełniacz: żaden problem→żadnego problemu',tne:'Negation → genitive',err:'żaden problem',cor:'żadnego problemu',exp:'Przeczenie → dopełniacz: żadnego problemu',expe:'Negation → genitive: żadnego problemu'},
+    {id:'mx11',type:'sb',instr:'Zbuduj zdanie (3 przypadki!)',instrEn:'Build a sentence (3+ cases!)',en:"I don't have time to talk about this project at the office.",tag:'mixed',tn:'⚡ czasu (gen) + o projekcie (loc) + w biurze (loc)',tne:'Three cases in one sentence',pieces:['Nie','mam','czasu',',','aby','rozmawiać','o','tym','projekcie','w','biurze','.'],ans:'Nie mam czasu, aby rozmawiać o tym projekcie w biurze.',hint:'czasu (dop.) + o projekcie (miej.) + w biurze (miej.)',exp:'czasu (dop.), o projekcie (miej.), w biurze (miej.)',expe:'czasu (gen.), o projekcie (loc.), w biurze (loc.)'},
+    {id:'mx12',type:'sb',instr:'Zbuduj zdanie',instrEn:'Build a sentence',en:'My sister is a teacher and goes to work by tram.',tag:'mixed',tn:'⚡ nauczycielką (ins) + tramwajem (ins)',tne:'Instrumental: nauczycielką + tramwajem',pieces:['Moja','siostra','jest','nauczycielką','i','jedzie','do','pracy','tramwajem','.'],ans:'Moja siostra jest nauczycielką i jedzie do pracy tramwajem.',hint:'być + narzędnik (nauczycielką) + transport (tramwajem)',exp:'nauczycielką (nar.) + tramwajem (nar.)',expe:'instrumental: nauczycielką + tramwajem'},
+    {id:'mx13',type:'cl',instr:'Który przypadek?',instrEn:'Which case?',tag:'mixed',tn:'⚡ Rozpoznaj przypadek',tne:'Identify the case',items:[
+      {s:'Nie mam ___ (pomysł).',sE:"I don't have an idea.",opts:['Miejscownik','Dopełniacz','Biernik','Narzędnik'],cor:'Dopełniacz'},
+      {s:'Czytam ___ (artykuł).',sE:"I'm reading an article.",opts:['Miejscownik','Dopełniacz','Biernik','Narzędnik'],cor:'Biernik'},
+      {s:'Mieszkam ___ (duże miasto).',sE:'I live in a big city.',opts:['Miejscownik','Dopełniacz','Biernik','Narzędnik'],cor:'Miejscownik'},
+      {s:'Jadę ___ (rower) do parku.',sE:'I go to the park by bike.',opts:['Miejscownik','Dopełniacz','Biernik','Narzędnik'],cor:'Narzędnik'},
+      {s:'Ona jest ___ (lekarka).',sE:'She is a doctor.',opts:['Miejscownik','Dopełniacz','Biernik','Narzędnik'],cor:'Narzędnik'}
+    ]}
+  ];
+  SECS.find(function(s){return s.id==='mix';}).exs = shuf(pool);
+})();
+
+var DIAL = [
+  {id:'d1',sp:'Żona',spE:'Wife',left:true,line:'Kochanie, nie mogę znaleźć kluczy ___ (przedpokój).',lineE:"Honey, I can't find my keys in the hallway.",opts:['w przedpokoju','do przedpokoju','z przedpokoju','na przedpokój'],ans:'w przedpokoju',tag:'loc',note:'📍 w + miejscownik'},
+  {id:'d2',sp:'Mąż',spE:'Husband',left:false,line:'Sprawdziłaś ___ (stół) w kuchni?',lineE:'Did you check the table in the kitchen?',opts:['stół','stołu','na stole','na stół'],ans:'na stole',tag:'loc',note:'📍 na + miejscownik'},
+  {id:'d3',sp:'Żona',spE:'Wife',left:true,line:'Nie, nie ma ___ (klucze) na stole.',lineE:"No, there are no keys on the table.",opts:['klucze','kluczy','kluczom','kluczami'],ans:'kluczy',tag:'gen',note:'🚫 nie ma + dopełniacz'},
+  {id:'d4',sp:'Mąż',spE:'Husband',left:false,line:'Wczoraj szukałaś ___ (telefon) bardzo długo.',lineE:'Yesterday you were looking for your phone for so long.',opts:['telefon','telefonu','telefonowi','telefonem'],ans:'telefonu',tag:'gen',note:"🔗 'szukać' + dopełniacz"},
+  {id:'d5',sp:'Żona',spE:'Wife',left:true,line:'I znalazłam ___ (telefon) na kanapie!',lineE:'And I found my phone on the couch!',opts:['telefon','telefonu','telefonowi','telefonem'],ans:'telefon',tag:'acc',note:'🎯 znaleźć + biernik'},
+  {id:'d6',sp:'Mąż',spE:'Husband',left:false,line:'Świetnie! Dzisiaj jadę ___ (samochód) do biura.',lineE:"Great! Today I'm going to the office by car.",opts:['samochód','samochodem','samochodowi','samochodu'],ans:'samochodem',tag:'ins',note:'🚂 narzędnik środka transportu'}
+];
+
+var SPRINT_D = [
+  {id:'sp1',cat:'📍 Miejscownik',q:'Dzieci bawią się ___ (ogród) po południu.',en:'Children play in the garden.',tag:'loc',opts:['w ogród','w ogrodzie','do ogrodu','z ogrodu'],ans:'w ogrodzie',exp:'w + miejscownik: ogród → ogrodzie'},
+  {id:'sp2',cat:'🔗 Dopełniacz',q:'Nie mam ___ (pieniądze) na nowy samochód.',en:"I don't have money for a new car.",tag:'gen',opts:['pieniądze','pieniędzy','pieniądzom','pieniędzmi'],ans:'pieniędzy',exp:'nie mam + dopełniacz: pieniędzy'},
+  {id:'sp3',cat:'🎯 Biernik',q:'Codziennie jem ___ (zdrowe śniadanie).',en:'Every day I eat a healthy breakfast.',tag:'acc',opts:['zdrowe śniadanie','zdrowego śniadania','zdrowemu śniadaniu','zdrowym śniadaniem'],ans:'zdrowe śniadanie',exp:'jeść + biernik (nijaki): zdrowe śniadanie'},
+  {id:'sp4',cat:'🛠️ Narzędnik',q:'Jadę na lotnisko ___ (taksówka).',en:"I'm going to the airport by taxi.",tag:'ins',opts:['taksówka','taksówką','taksówki','taksówce'],ans:'taksówką',exp:'środek transportu → narzędnik: taksówką'},
+  {id:'sp5',cat:'📍 Miejscownik',q:'Często myślę ___ (moja rodzina).',en:'I often think about my family.',tag:'loc',opts:['o moja rodzina','o mojej rodzinie','o moją rodzinę','z moją rodziną'],ans:'o mojej rodzinie',exp:'o + miejscownik: rodzina → rodzinie'},
+  {id:'sp6',cat:'🔗 Dopełniacz',q:'Od roku uczę się ___ (polska gramatyka).',en:"I've been learning Polish grammar for a year.",tag:'gen',opts:['polska gramatyka','polskiej gramatyki','polskiej gramatyce','polską gramatykę'],ans:'polskiej gramatyki',exp:'uczyć się + dopełniacz: polskiej gramatyki'},
+  {id:'sp7',cat:'🎯 Biernik',q:'Bardzo kocham ___ (mój kot).',en:'I love my cat very much.',tag:'acc',opts:['mój kot','mojego kota','mojemu kotu','moim kotem'],ans:'mojego kota',exp:'kochać + biernik (żywotny m.): mojego kota'},
+  {id:'sp8',cat:'🛠️ Narzędnik',q:'Mój tata jest ___ (dobry inżynier).',en:'My dad is a good engineer.',tag:'ins',opts:['dobry inżynier','dobrym inżynierem','dobrego inżyniera','dobremu inżynierowi'],ans:'dobrym inżynierem',exp:'być + narzędnik: dobrym inżynierem'},
+  {id:'sp9',cat:'📍 Miejscownik',q:'Twoje okulary są ___ (półka) w sypialni.',en:'Your glasses are on the shelf.',tag:'loc',opts:['na półkę','na półce','na półka','do półki'],ans:'na półce',exp:'na + miejscownik: półka → półce'},
+  {id:'sp10',cat:'🔗 Dopełniacz',q:'Wieczorem nie słyszę ___ (hałas) z ulicy.',en:"In the evenings I don't hear noise from the street.",tag:'gen',opts:['hałas','hałasu','hałasowi','hałasem'],ans:'hałasu',exp:'nie słyszę + dopełniacz: hałas → hałasu'},
+  {id:'sp11',cat:'🎯 Biernik',q:'W weekend oglądam ___ (dobry film).',en:'On the weekend I watch a good movie.',tag:'acc',opts:['dobry film','dobrego filmu','dobremu filmowi','dobrym filmem'],ans:'dobry film',exp:'oglądać + biernik (nieżywotny m.): dobry film'},
+  {id:'sp12',cat:'🛠️ Narzędnik',q:'Idę na spacer ___ (mój pies).',en:"I'm going for a walk with my dog.",tag:'ins',opts:['mój pies','z moim psem','z mojego psa','z moim psie'],ans:'z moim psem',exp:'z + narzędnik: z moim psem'}
+];
+
+// ── TIMER ────────────────────────────────────────────────────
+setInterval(function(){
+  if(state.t <= 0) return;
+  state.t--;
+  var m = Math.floor(state.t/60), s = state.t%60;
+  document.getElementById('timerText').textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  if(state.t < 300) document.getElementById('timer').className = 'urgent';
+}, 1000);
+
+// ── XP ───────────────────────────────────────────────────────
+function objVals(obj){
+  var out=[];
+  for(var k in obj){if(obj.hasOwnProperty(k))out.push(obj[k]);}
+  return out;
+}
+function objKeys(obj){
+  var out=[];
+  for(var k in obj){if(obj.hasOwnProperty(k))out.push(k);}
+  return out;
+}
+function totalXP(){
+  var t=0;
+  for(var i=0;i<SECS.length;i++){if(SECS[i].exs)t+=SECS[i].exs.length*10;}
+  return t;
+}
+function updateXP(){
+  var tot=totalXP(), pct=tot>0?Math.round((state.xp/tot)*100):0;
+  document.getElementById('xpL').textContent='XP: '+state.xp+' / '+tot;
+  document.getElementById('xpP').textContent=pct+'%';
+  document.getElementById('xp-fill').style.width=pct+'%';
+}
+function addXP(){ state.xp+=10; updateXP(); }
+
+// ── REGISTER ANSWER ──────────────────────────────────────────
+function regAns(secId, qid, chosen, correct, okOverride){
+  if(!state.ans[secId]) state.ans[secId]={};
+  if(state.ans[secId][qid]) return;
+  var ok = okOverride !== undefined ? okOverride : (chosen === correct);
+  state.ans[secId][qid] = {chosen:chosen, correct:ok};
+  if(ok) addXP();
+  renderSection();
+}
+
+// ── MAKE ERROR OPTIONS (always 4) ────────────────────────────
+function makeErrOpts(cor, err){
+  var cW=cor.split(' '), eW=err.split(' ');
+  var cL=cW[cW.length-1], eL=eW[eW.length-1];
+  var cP=cW.slice(0,-1).join(' '), eP=eW.slice(0,-1).join(' ');
+  var cands=[cor, err,
+    cP?(cP+' '+eL):eL,
+    eP?(eP+' '+cL):cL,
+    cL+'m', cL.slice(0,-1)+'ę', cL.slice(0,-1)+'a', cL.slice(0,-2)+'om'
+  ];
+  var seen={}, out=[];
+  for(var i=0;i<cands.length;i++){
+    var t=cands[i].trim();
+    if(t && !seen[t]){ seen[t]=1; out.push(t); }
+    if(out.length===4) break;
+  }
+  while(out.length<4) out.push(cor+'i'+out.length);
+  return out;
+}
+
+// ── RENDER TABS ──────────────────────────────────────────────
+function renderTabs(){
+  var el=document.getElementById('tabs');
+  el.innerHTML='';
+  for(var i=0;i<SECS.length;i++){
+    var sec=SECS[i], active=(i===state.idx);
+    var done=sec.exs&&state.ans[sec.id]&&objKeys(state.ans[sec.id]).length===sec.exs.length&&sec.exs.length>0;
+    var b=document.createElement('button');
+    b.style.cssText='flex:0 0 auto;width:72px;padding:8px 2px;background:none;border:none;border-bottom:3px solid '+(active?sec.color:'transparent')+';cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:inherit;';
+    var icon=document.createElement('span');
+    icon.style.cssText='font-size:16px;line-height:1;';
+    icon.textContent=sec.icon;
+    var lbl=document.createElement('span');
+    lbl.style.cssText='font-size:8px;font-weight:600;color:'+(active?sec.color:'#6B7280')+';text-align:center;line-height:1.2;font-family:inherit;';
+    lbl.textContent=sec.en;
+    b.appendChild(icon);
+    b.appendChild(lbl);
+    if(done){var tick=document.createElement('span');tick.style.cssText='font-size:8px;color:#52B788;font-weight:700;';tick.textContent='✓';b.appendChild(tick);}
+    (function(idx){b.addEventListener('click',function(){state.idx=idx;render();});})(i);
+    el.appendChild(b);
+  }
+}
+
+// ── RENDER THEORY ────────────────────────────────────────────
+function renderTheory(sec){
+  var color=sec.color, th=sec.th, wrap=div('');
+  // intro
+  var intro=div('background:'+color+'15;border:1.5px solid '+color+'35;border-radius:12px;padding:14px 16px;margin-bottom:16px;');
+  var irow=div('display:flex;align-items:flex-start;gap:8px;font-size:14px;color:#1A1E2E;font-weight:500;line-height:1.6;');
+  ap(irow,span(th.intro.pl,'flex:1;'));ap(irow,enTip(th.intro.en));ap(intro,irow);ap(wrap,intro);
+  // blocks
+  for(var bi=0;bi<th.blocks.length;bi++){
+    var blk=th.blocks[bi];
+    var b=div('background:'+blk.bg+';border:2px solid '+blk.color+'45;border-radius:14px;padding:14px 16px;margin-bottom:14px;');
+    var bh=div('display:flex;align-items:center;gap:8px;margin-bottom:10px;');
+    ap(bh,span(blk.badge,'font-size:22px;'));
+    var bt=div('font-weight:800;font-size:14px;color:'+blk.color+';display:flex;align-items:center;gap:6px;');
+    ap(bt,tx(blk.name));ap(bt,enTip(blk.nameEn));ap(bh,bt);ap(b,bh);
+    var rr=div('display:flex;align-items:flex-start;gap:6px;font-size:13px;color:#1A1E2E;font-weight:600;margin-bottom:10px;');
+    ap(rr,span(blk.rule,'flex:1;'));ap(rr,enTip(blk.ruleEn));ap(b,rr);
+    if(blk.sigs){
+      var sp=div('display:flex;flex-wrap:wrap;margin-bottom:10px;');
+      for(var si=0;si<blk.sigs.length;si++){
+        var pill=span(blk.sigs[si],'background:#fff;border:1px solid '+blk.color+'50;border-radius:99px;padding:2px 9px;font-size:11px;font-weight:600;color:'+blk.color+';display:inline-flex;align-items:center;gap:4px;margin:2px;');
+        if(blk.sigsEn&&blk.sigsEn[si])ap(pill,enTip(blk.sigsEn[si]));
+        ap(sp,pill);
+      }
+      ap(b,sp);
+    }
+    for(var ei=0;ei<blk.exs.length;ei++){
+      var ex=blk.exs[ei];
+      var eb=div('background:#fff;border-radius:10px;padding:10px 12px;border-left:3px solid '+blk.color+';'+(ei<blk.exs.length-1?'margin-bottom:8px;':''));
+      var er=div('display:flex;align-items:flex-start;gap:6px;font-size:13px;color:#1A1E2E;font-weight:500;margin-bottom:4px;');
+      ap(er,span(ex.pl,'flex:1;'));ap(er,enTip(ex.en));ap(eb,er);
+      ap(eb,span(ex.tag,'font-size:11px;background:'+blk.color+'18;border-radius:6px;padding:2px 8px;color:'+blk.color+';font-weight:600;'));
+      ap(b,eb);
+    }
+    ap(wrap,b);
+  }
+  // table
+  var tbl=div(''); var tw=div(''); tw.className='tbl';
+  var thead=div(''); thead.className='tbl-hd'; thead.style.background=color+'15';
+  var cols=['Podstawa','Forma','English','Uwaga'];
+  for(var ci=0;ci<cols.length;ci++) ap(thead,span(cols[ci],'font-size:10px;font-weight:700;color:'+color+';'));
+  ap(tw,thead);
+  for(var ri=0;ri<th.tbl.length;ri++){
+    var row=th.tbl[ri], tr=div(''); tr.className='tbl-row';
+    ap(tr,span(row.b,'color:#1A1E2E;font-weight:600;'));
+    ap(tr,span(row.f,'color:'+color+';font-weight:600;'));
+    ap(tr,span(row.e,'color:#1D4ED8;font-style:italic;'));
+    ap(tr,span(row.n,'color:#6B7280;'));
+    ap(tw,tr);
+  }
+  ap(tbl,div('font-weight:700;font-size:14px;color:'+color+';margin-bottom:10px;'));
+  ap(tbl,tw); ap(wrap,tbl);
+  // tip
+  var tip=div('background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:12px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:flex-start;gap:8px;');
+  ap(tip,span(th.tip.pl,'margin:0;font-size:13px;color:#92400E;font-weight:500;flex:1;'));ap(tip,enTip(th.tip.en));ap(wrap,tip);
+  return wrap;
+}
+
+// ── RENDER CHOICE ────────────────────────────────────────────
+function renderChoice(q, qi, secId, color){
+  if(!state.sopts[q.id]) state.sopts[q.id]=shuf(q.opts);
+  var a=state.ans[secId]&&state.ans[secId][q.id];
+  var card=div(''); card.className='card'+(a?(a.correct?' ok':' bad'):'');
+  ap(card,tagBtn(q.id,q.tn,q.tne,q.tag));
+  var top=div('display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;');
+  var qrow=div('flex:1;display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;');
+  ap(qrow,span((qi+1)+'.','font-weight:700;color:'+color+';margin-right:2px;'));
+  ap(qrow,span(q.q,'font-size:14px;font-weight:500;color:#1A1E2E;'));
+  ap(qrow,enTip(q.en));ap(top,qrow);
+  if(!a) ap(top,hintBtnEl(q.id,q.hint));
+  ap(card,top);
+  var grid=div(''); grid.className='opt-grid';
+  var opts=state.sopts[q.id];
+  for(var oi=0;oi<opts.length;oi++){
+    var opt=opts[oi];
+    var cls='opt';
+    if(a){if(opt===q.ans)cls+=' ok';else if(opt===a.chosen&&!a.correct)cls+=' bad';}
+    var b=document.createElement('button'); b.className=cls; b.disabled=!!a;
+    ap(b,span(String.fromCharCode(65+oi),'font-weight:700;font-size:11px;min-width:16px;color:#9CA3AF;'));
+    ap(b,tx(opt));
+    if(!a)(function(o){b.addEventListener('click',function(){regAns(secId,q.id,o,q.ans);});})(opt);
+    ap(grid,b);
+  }
+  ap(card,grid);
+  if(a){
+    var rb=div(''); rb.className='res';
+    var rt=div(''); rt.className='res-top '+(a.correct?'ok':'bad');
+    rt.textContent=a.correct?'✅ Dobrze!':'❌ Poprawna: '+q.ans; ap(rb,rt);
+    var re=div('display:flex;align-items:flex-start;gap:6px;'); re.className='res-exp';
+    ap(re,span('🇵🇱 '+q.exp,'flex:1;'));ap(re,enTip(q.expe));ap(rb,re);
+    ap(card,rb);
+  }
+  return card;
+}
+
+// ── RENDER ERROR CORRECT ─────────────────────────────────────
+function renderEC(q, qi, secId, color){
+  if(!state.sopts[q.id]) state.sopts[q.id]=shuf(makeErrOpts(q.cor,q.err));
+  var a=state.ans[secId]&&state.ans[secId][q.id];
+  var parts=q.q.split(q.err);
+  var card=div(''); card.className='card'+(a?(a.correct?' ok':' bad'):'');
+  ap(card,tagBtn(q.id,q.tn,q.tne,q.tag));
+  var top=div('display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;');
+  var tl=div('');
+  ap(tl,span((qi+1)+'.','font-weight:700;color:'+color+';margin-right:6px;'));
+  ap(tl,span('Znajdź i popraw błąd','font-size:12px;color:#6B7280;'));
+  ap(top,tl);
+  if(!a) ap(top,hintBtnEl(q.id,q.exp));
+  ap(card,top);
+  var errBox=div('background:#FFF5F5;border:1.5px solid #FCA5A5;border-radius:10px;padding:10px 14px;font-size:14px;color:#1A1E2E;font-weight:500;margin-bottom:6px;display:flex;align-items:flex-start;gap:6px;');
+  var et=span('','flex:1;');
+  ap(et,tx(parts[0]));
+  ap(et,span(q.err,'background:#FEE2E2;color:#991B1B;font-weight:700;padding:1px 4px;border-radius:4px;text-decoration:line-through;'));
+  ap(et,tx(parts[1]||''));
+  ap(errBox,et); ap(errBox,enTip(q.en)); ap(card,errBox);
+  ap(card,span('Jaka jest poprawna forma?','display:block;margin-bottom:8px;font-size:13px;color:#6B7280;'));
+  var ow=div('display:flex;flex-wrap:wrap;gap:8px;');
+  var opts=state.sopts[q.id];
+  for(var oi=0;oi<opts.length;oi++){
+    var opt=opts[oi];
+    var bg='#fff',bc='#E5E7EB',col='#374151',fw='500';
+    if(a){if(opt===q.cor){bg='#DCFCE7';bc='#86EFAC';col='#166534';fw='700';}else if(opt===a.chosen&&!a.correct){bg='#FEE2E2';bc='#FCA5A5';col='#991B1B';}}
+    var b=document.createElement('button');
+    b.style.cssText='padding:9px 16px;background:'+bg+';border:1.5px solid '+bc+';border-radius:10px;font-size:13px;color:'+col+';font-weight:'+fw+';font-family:inherit;';
+    b.textContent=opt; b.disabled=!!a;
+    if(!a)(function(o){b.addEventListener('click',function(){regAns(secId,q.id,o,q.cor);});})(opt);
+    ap(ow,b);
+  }
+  ap(card,ow);
+  if(a){
+    var rb=div(''); rb.className='res';
+    var rt=div(''); rt.className='res-top '+(a.correct?'ok':'bad');
+    rt.textContent=a.correct?'✅ Dobrze!':'❌ Poprawnie: '+q.cor; ap(rb,rt);
+    var re=div('display:flex;align-items:flex-start;gap:6px;'); re.className='res-exp';
+    ap(re,span('🇵🇱 '+q.exp,'flex:1;'));ap(re,enTip(q.expe));ap(rb,re);
+    ap(card,rb);
+  }
+  return card;
+}
+
+// ── RENDER TRANSFORM ─────────────────────────────────────────
+function renderTR(q, qi, secId, color){
+  if(!state.sopts[q.id]) state.sopts[q.id]=shuf(q.opts);
+  var a=state.ans[secId]&&state.ans[secId][q.id];
+  var card=div(''); card.className='card'+(a?(a.correct?' ok':' bad'):'');
+  ap(card,tagBtn(q.id,q.tn,q.tne,q.tag));
+  var ir=div('display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px;');
+  ap(ir,span((qi+1)+'.','font-weight:700;color:'+color+';margin-right:4px;'));
+  ap(ir,span(q.instr,'font-size:12px;color:#6B7280;'));
+  ap(ir,enTip(q.instrEn)); ap(card,ir);
+  var ab=div('background:#F8FAFF;border-radius:8px;padding:10px 12px;font-size:14px;font-weight:600;color:#1A1E2E;margin-bottom:8px;border-left:3px solid '+color+';display:flex;align-items:flex-start;gap:6px;');
+  ap(ab,span(q.q,'flex:1;'));ap(ab,enTip(q.en));ap(card,ab);
+  if(!a) ap(card,hintBtnEl(q.id,q.hint));
+  var ow=div('display:flex;flex-direction:column;gap:8px;margin-top:10px;');
+  var opts=state.sopts[q.id];
+  for(var oi=0;oi<opts.length;oi++){
+    var opt=opts[oi];
+    var bg='#fff',bc='#E5E7EB',col='#374151',fw='500';
+    if(a){if(opt===q.ans){bg='#DCFCE7';bc='#86EFAC';col='#166534';fw='700';}else if(opt===a.chosen&&!a.correct){bg='#FEE2E2';bc='#FCA5A5';col='#991B1B';}}
+    var b=document.createElement('button');
+    b.style.cssText='padding:10px 14px;background:'+bg+';border:1.5px solid '+bc+';border-radius:10px;font-size:13px;color:'+col+';font-weight:'+fw+';text-align:left;width:100%;font-family:inherit;';
+    b.textContent=opt; b.disabled=!!a;
+    if(!a)(function(o){b.addEventListener('click',function(){regAns(secId,q.id,o,q.ans);});})(opt);
+    ap(ow,b);
+  }
+  ap(card,ow);
+  if(a){
+    var rb=div(''); rb.className='res';
+    var rt=div(''); rt.className='res-top '+(a.correct?'ok':'bad');
+    rt.textContent=a.correct?'✅ Dobrze!':'❌ Poprawna: '+q.ans; ap(rb,rt);
+    var re=div('display:flex;align-items:flex-start;gap:6px;'); re.className='res-exp';
+    ap(re,span('🇵🇱 '+q.exp,'flex:1;'));ap(re,enTip(q.expe));ap(rb,re);
+    ap(card,rb);
+  }
+  return card;
+}
+
+// ── RENDER SENTENCE BUILD ────────────────────────────────────
+function renderSB(q, qi, secId, color){
+  var a=state.ans[secId]&&state.ans[secId][q.id];
+  if(!state.pool[q.id]) state.pool[q.id]=shuf(q.pieces);
+  if(!state.placed[q.id]) state.placed[q.id]=[];
+  var card=div(''); card.className='card'+(a?(a.correct?' ok':' bad'):'');
+  ap(card,tagBtn(q.id,q.tn,q.tne,q.tag));
+  var top=div('display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;');
+  var tl=div('');
+  ap(tl,span((qi+1)+'.','font-weight:700;color:'+color+';margin-right:6px;'));
+  ap(tl,span(q.instr,'font-size:12px;color:#6B7280;'));
+  ap(tl,enTip(q.instrEn||q.en));ap(top,tl);
+  if(!a) ap(top,hintBtnEl(q.id,q.hint));
+  ap(card,top);
+  var zone=div(''); zone.className='build-zone';
+  if(state.placed[q.id].length===0) ap(zone,span('Kliknij fragmenty poniżej...','color:#C4B5FD;font-size:12px;'));
+  for(var pi=0;pi<state.placed[q.id].length;pi++){
+    var w=state.placed[q.id][pi];
+    var pb=document.createElement('button'); pb.className='bp placed'; pb.textContent=w; pb.disabled=!!a;
+    if(!a)(function(wi){pb.addEventListener('click',function(){state.pool[q.id].push(state.placed[q.id][wi]);state.placed[q.id].splice(wi,1);renderSection();});})(pi);
+    ap(zone,pb);
+  }
+  ap(card,zone);
+  var pool=div('display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;');
+  for(var li=0;li<state.pool[q.id].length;li++){
+    var w=state.pool[q.id][li];
+    var pb=document.createElement('button'); pb.className='bp pool'; pb.textContent=w; pb.disabled=!!a;
+    if(!a)(function(wi){pb.addEventListener('click',function(){state.placed[q.id].push(state.pool[q.id][wi]);state.pool[q.id].splice(wi,1);renderSection();});})(li);
+    ap(pool,pb);
+  }
+  ap(card,pool);
+  if(!a){
+    var full=state.placed[q.id].length===q.pieces.length;
+    var row=div('display:flex;gap:8px;');
+    var chk=document.createElement('button');
+    chk.style.cssText='background:'+color+';border:none;border-radius:10px;padding:8px 18px;color:#fff;font-weight:700;font-size:13px;opacity:'+(full?1:.5)+';font-family:inherit;';
+    chk.textContent='Sprawdź →'; chk.disabled=!full;
+    if(full) chk.addEventListener('click',function(){
+      var att=state.placed[q.id].join(' ').trim();
+      regAns(secId,q.id,att,q.ans,att.toLowerCase()===q.ans.toLowerCase().trim());
+    });
+    var rst=document.createElement('button');
+    rst.style.cssText='background:#F3F4F6;border:1px solid #E5E7EB;border-radius:10px;padding:8px 14px;color:#6B7280;font-size:13px;font-family:inherit;';
+    rst.textContent='Reset';
+    rst.addEventListener('click',function(){state.pool[q.id]=shuf(q.pieces);state.placed[q.id]=[];renderSection();});
+    ap(row,chk);ap(row,rst);ap(card,row);
+  }
+  if(a){
+    var rb=div(''); rb.className='res';
+    var rt=div(''); rt.className='res-top '+(a.correct?'ok':'bad');
+    rt.textContent=a.correct?'✅ Doskonale!':'❌ Niepoprawna kolejność'; ap(rb,rt);
+    if(!a.correct) ap(rb,div('background:#F8FAFF;border:1px solid #DBEAFE;padding:8px 12px;font-size:12px;'));
+    var re=div('display:flex;align-items:flex-start;gap:6px;'); re.className='res-exp';
+    ap(re,span('🇵🇱 '+q.exp,'flex:1;'));ap(re,enTip(q.expe));ap(rb,re);
+    if(!a.correct){
+      var retry=document.createElement('button');
+      retry.style.cssText='margin-top:8px;background:'+color+';border:none;border-radius:10px;padding:7px 16px;color:#fff;font-weight:700;font-size:12px;font-family:inherit;';
+      retry.textContent='Spróbuj ponownie';
+      retry.addEventListener('click',function(){
+        state.pool[q.id]=shuf(q.pieces);state.placed[q.id]=[];
+        if(state.ans[secId]) delete state.ans[secId][q.id];
+        renderSection();
+      });
+      ap(rb,retry);
+    }
+    ap(card,rb);
+  }
+  return card;
+}
+
+// ── RENDER CLASSIFY ──────────────────────────────────────────
+function renderCL(q, qi, secId, color){
+  if(!state.csel[q.id]) state.csel[q.id]={};
+  var a=state.ans[secId]&&state.ans[secId][q.id];
+  var card=div(''); card.className='card'+(a?(a.correct?' ok':' bad'):'');
+  ap(card,tagBtn(q.id,q.tn,q.tne,q.tag));
+  var hd=div('margin-bottom:8px;');
+  ap(hd,span((qi+1)+'.','font-weight:700;color:'+color+';margin-right:6px;'));
+  ap(hd,span(q.instr,'font-size:13px;font-weight:600;color:#1A1E2E;'));
+  ap(hd,enTip(q.instrEn||''));ap(card,hd);
+  for(var ii=0;ii<q.items.length;ii++){
+    var item=q.items[ii], sel=state.csel[q.id][ii], checked=!!a;
+    var wrap=div(''); wrap.className='cl-item'+(checked?(sel===item.cor?' ok':' bad'):'');
+    var sr=div('display:flex;align-items:flex-start;gap:6px;font-size:13px;color:#1A1E2E;font-weight:500;margin-bottom:8px;');
+    ap(sr,span(item.s,'flex:1;'));ap(sr,enTip(item.sE||''));ap(wrap,sr);
+    var ow=div(''); ow.className='cl-opts';
+    for(var oi=0;oi<item.opts.length;oi++){
+      var opt=item.opts[oi];
+      var cls='cl-opt';
+      if(checked){if(opt===item.cor)cls+=' ok';else if(opt===sel&&opt!==item.cor)cls+=' bad';}
+      else if(opt===sel)cls+=' sel';
+      var ob=document.createElement('button'); ob.className=cls; ob.textContent=opt; ob.disabled=!!checked;
+      if(!checked)(function(oii,o){ob.addEventListener('click',function(){state.csel[q.id][oii]=o;renderSection();});})(ii,opt);
+      ap(ow,ob);
+    }
+    ap(wrap,ow);ap(card,wrap);
+  }
+  if(!a){
+    var allDone=true;
+    for(var ii=0;ii<q.items.length;ii++){if(state.csel[q.id][ii]===undefined){allDone=false;break;}}
+    var chk=document.createElement('button');
+    chk.style.cssText='background:'+color+';border:none;border-radius:10px;padding:9px 20px;color:#fff;font-weight:700;font-size:13px;opacity:'+(allDone?1:.5)+';font-family:inherit;';
+    chk.textContent='Sprawdź →'; chk.disabled=!allDone;
+    if(allDone) chk.addEventListener('click',function(){
+      var ok=true;
+      for(var ii=0;ii<q.items.length;ii++){if(state.csel[q.id][ii]!==q.items[ii].cor){ok=false;break;}}
+      regAns(secId,q.id,'cl',null,ok);
+    });
+    ap(card,chk);
+  }
+  if(a){
+    var msg=div('border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;margin-top:10px;background:'+(a.correct?'#DCFCE7':'#FEE2E2')+';color:'+(a.correct?'#166534':'#991B1B')+';');
+    msg.textContent=a.correct?'✅ Wszystkie poprawnie!':'❌ Sprawdź podświetlone zdania';ap(card,msg);
+  }
+  return card;
+}
+
+// ── RENDER GRAMMAR SECTION ───────────────────────────────────
+function renderGrammar(sec){
+  if(!state.phase[sec.id]) state.phase[sec.id]='learn';
+  var ph=state.phase[sec.id], wrap=div('');
+  var ptabs=div(''); ptabs.className='ptabs';
+  var tabs=[{id:'learn',label:'📖 Teoria'},{id:'practice',label:'✏️ Ćwiczenia'}];
+  for(var ti=0;ti<tabs.length;ti++){
+    var t=tabs[ti], active=(ph===t.id);
+    var b=document.createElement('button'); b.className='ptab'+(active?' active':'');
+    b.style.background=active?sec.color:'';b.style.color=active?'#fff':'';
+    b.textContent=t.label;
+    (function(tid){b.addEventListener('click',function(){state.phase[sec.id]=tid;renderSection();});})(t.id);
+    ap(ptabs,b);
+  }
+  ap(wrap,ptabs);
+  if(ph==='learn'){
+    ap(wrap,renderTheory(sec));
+    var go=document.createElement('button');
+    go.style.cssText='width:100%;background:'+sec.color+';border:none;border-radius:12px;padding:14px;color:#fff;font-weight:800;font-size:15px;font-family:inherit;';
+    go.textContent='✏️ Zaczynam ćwiczenia!';
+    go.addEventListener('click',function(){state.phase[sec.id]='practice';renderSection();});
+    ap(wrap,go);
+  } else {
+    var back=document.createElement('button');
+    back.style.cssText='background:none;border:1.5px solid '+sec.color+'50;border-radius:10px;padding:7px 14px;color:'+sec.color+';font-weight:600;font-size:13px;margin-bottom:16px;font-family:inherit;';
+    back.textContent='← Wróć do teorii';
+    back.addEventListener('click',function(){state.phase[sec.id]='learn';renderSection();});
+    ap(wrap,back);
+    if(!state.ans[sec.id]) state.ans[sec.id]={};
+    for(var qi=0;qi<sec.exs.length;qi++){
+      var q=sec.exs[qi], card=null;
+      if(q.type==='ch') card=renderChoice(q,qi,sec.id,sec.color);
+      else if(q.type==='ec') card=renderEC(q,qi,sec.id,sec.color);
+      else if(q.type==='tr') card=renderTR(q,qi,sec.id,sec.color);
+      else if(q.type==='sb') card=renderSB(q,qi,sec.id,sec.color);
+      else if(q.type==='cl') card=renderCL(q,qi,sec.id,sec.color);
+      if(card) ap(wrap,card);
+    }
+    var done=objKeys(state.ans[sec.id]).length===sec.exs.length;
+    if(done){
+      var sc=0; var ansVals=objVals(state.ans[sec.id]);
+      for(var ai=0;ai<ansVals.length;ai++) if(ansVals[ai].correct) sc++;
+      var fc=div(''); fc.className='finish';
+      fc.style.background='linear-gradient(135deg,'+sec.color+',#2563EB)';
+      ap(fc,div('font-size:32px;margin-bottom:6px;')); // emoji placeholder
+      fc.firstChild.textContent='🎉';
+      ap(fc,span('Sekcja ukończona!','display:block;font-weight:800;font-size:17px;margin-bottom:4px;'));
+      ap(fc,span(sc+'/'+sec.exs.length+' poprawnych','display:block;font-size:13px;opacity:.85;'));
+      ap(wrap,fc);
+    }
+  }
+  return wrap;
+}
+
+// ── VOCAB ────────────────────────────────────────────────────
+function renderVocab(sec){
+  var wrap=div('');
+  var ptabs=div('display:flex;gap:6px;margin-bottom:16px;');
+  var vps=[{id:'cards',label:'📚 Fiszki'},{id:'match',label:'🔗 Dopasuj'},{id:'trans',label:'✍️ Wpisz'}];
+  for(var ti=0;ti<vps.length;ti++){
+    var t=vps[ti], active=(state.vp===t.id);
+    var b=document.createElement('button');
+    b.style.cssText='flex:1;padding:9px;border:1.5px solid '+(active?sec.color:'#D6CCE8')+';border-radius:10px;font-weight:700;font-size:12px;background:'+(active?sec.color:'#fff')+';color:'+(active?'#fff':'#1A1E2E')+';font-family:inherit;';
+    b.textContent=t.label;
+    (function(vp){b.addEventListener('click',function(){state.vp=vp;state._ms=null;renderSection();});})(t.id);
+    ap(ptabs,b);
+  }
+  ap(wrap,ptabs);
+  if(state.vp==='cards'){
+    ap(wrap,div('background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:9px 14px;margin-bottom:14px;font-size:12px;color:#92400E;').appendChild(tx('💡 Kliknij kartę, żeby zobaczyć przykład.'))||wrap);
+    var tip=div('background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:9px 14px;margin-bottom:14px;font-size:12px;color:#92400E;');
+    tip.textContent='💡 Kliknij kartę, żeby zobaczyć przykład.';ap(wrap,tip);
+    var grid=div(''); grid.className='vocab-grid';
+    for(var wi=0;wi<sec.words.length;wi++){
+      var w=sec.words[wi], fl=state.vflip[wi];
+      var card=document.createElement('button'); card.className='vcard';
+      card.style.borderColor=fl?sec.color:'#D6CCE8';card.style.background=fl?'#FFF7ED':'#fff';
+      if(!fl){
+        var r=div('display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;color:'+sec.color+';margin-bottom:4px;');
+        ap(r,tx(w.pl));ap(r,enTip(w.en));ap(card,r);
+        ap(card,span('↓ przykład','font-size:10px;color:#6B7280;'));
+      } else {
+        var r=div('display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#1A1E2E;line-height:1.5;');
+        ap(r,span(w.ep,'flex:1;'));ap(r,enTip(w.ee));ap(card,r);
+      }
+      (function(idx){card.addEventListener('click',function(){state.vflip[idx]=!state.vflip[idx];renderSection();});})(wi);
+      ap(grid,card);
+    }
+    ap(wrap,grid);
+  } else if(state.vp==='match'){
+    if(!state._ms) state._ms=shuf(sec.words.map(function(_,i){return i;}));
+    var info=div('background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:10px;padding:9px 14px;margin-bottom:14px;font-size:13px;color:#1E40AF;');
+    info.textContent='Kliknij polskie słowo, potem angielskie.';ap(wrap,info);
+    var row=div('display:flex;gap:10px;');
+    var plC=div('flex:1;');
+    ap(plC,span('🇵🇱 Polski','display:block;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;'));
+    for(var wi=0;wi<sec.words.length;wi++){
+      var w=sec.words[wi], done=state.vmatch[wi], isSel=state.vsel===wi;
+      var b=document.createElement('button');
+      b.className='match-btn'+(done?' done':isSel?' sel':'');
+      b.textContent=(done?'✓ ':'')+w.pl; b.disabled=!!done;
+      if(!done)(function(idx){b.addEventListener('click',function(){state.vsel=idx;renderSection();});})(wi);
+      ap(plC,b);
+    }
+    var enC=div('flex:1;');
+    ap(enC,span('🇬🇧 English','display:block;font-size:11px;font-weight:700;color:#6B7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;'));
+    for(var si=0;si<state._ms.length;si++){
+      var idx=state._ms[si], w=sec.words[idx], done=state.vmatch[idx];
+      var b=document.createElement('button');
+      b.className='match-btn'+(done?' done':'');
+      b.textContent=(done?'✓ ':'')+w.en.split('(')[0].trim(); b.disabled=!!done;
+      if(!done)(function(i,btn){btn.addEventListener('click',function(){
+        if(state.vsel===null) return;
+        if(state.vsel===i){state.vmatch[i]=true;state.vsel=null;renderSection();}
+        else{btn.style.background='#FEE2E2';btn.style.borderColor='#FCA5A5';setTimeout(function(){state.vsel=null;renderSection();},700);}
+      });})(idx,b);
+      ap(enC,b);
+    }
+    ap(row,plC);ap(row,enC);ap(wrap,row);
+    var matched=Object.keys(state.vmatch).length;
+    if(matched===sec.words.length){
+      var fin=div('text-align:center;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:12px;padding:14px;margin-top:12px;color:#166534;font-weight:700;');
+      fin.textContent='🏠 Wszystko dopasowane!';ap(wrap,fin);
+    }
+  } else {
+    for(var wi=0;wi<sec.words.length;wi++){
+      var w=sec.words[wi], a=state.vta[wi];
+      var card=div(''); card.className='card'+(a?(a.correct?' ok':' bad'):'');
+      ap(card,span('🇬🇧 '+w.en,'display:block;font-size:14px;font-weight:600;color:#1D4ED8;margin-bottom:8px;'));
+      if(!a){
+        var row=div('display:flex;gap:8px;');
+        var inp=document.createElement('input');
+        inp.style.cssText='flex:1;padding:8px 12px;border:1.5px solid #86EFAC;border-radius:10px;font-size:13px;font-family:inherit;';
+        inp.placeholder='Wpisz po polsku...';
+        inp.value=state.vti[wi]||'';
+        inp.addEventListener('input',function(e){state.vti[wi]=e.target.value;});
+        var chkFn=function(wIdx,wObj){return function(){
+          var ok=(state.vti[wIdx]||'').trim().toLowerCase().indexOf(wObj.pl.split('(')[0].trim().toLowerCase().slice(0,5))>=0;
+          state.vta[wIdx]={correct:ok};renderSection();
+        };}(wi,w);
+        inp.addEventListener('keydown',function(e){if(e.key==='Enter')chkFn();});
+        var b=document.createElement('button');
+        b.style.cssText='background:'+sec.color+';border:none;border-radius:10px;padding:8px 14px;color:#fff;font-weight:700;font-size:13px;font-family:inherit;';
+        b.textContent='→';b.addEventListener('click',chkFn);
+        ap(row,inp);ap(row,b);ap(card,row);
+      } else {
+        var msg=div('border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;background:'+(a.correct?'#DCFCE7':'#FEE2E2')+';color:'+(a.correct?'#166534':'#991B1B')+';');
+        msg.textContent=(a.correct?'✅':'❌')+' Poprawnie: '+w.pl;ap(card,msg);
+      }
+      ap(wrap,card);
+    }
+  }
+  return wrap;
+}
+
+// ── DIALOGUE ─────────────────────────────────────────────────
+function renderDial(){
+  var wrap=div('');
+  var info=div('background:#F0FDFA;border:1.5px solid #5EEAD4;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#0F766E;font-weight:500;line-height:1.6;');
+  info.textContent='Uzupełnij dialog wybierając właściwą formę.';ap(wrap,info);
+  var sc=0; var dvals=objVals(state.dans);
+  for(var i=0;i<dvals.length;i++) if(dvals[i].correct) sc++;
+  var scbox=div('text-align:right;margin-bottom:14px;');
+  ap(scbox,span(sc+'/'+DIAL.length+' ✓','background:#F0FDFA;border:1px solid #5EEAD4;border-radius:99px;padding:4px 12px;font-size:12px;font-weight:700;color:#0F766E;'));
+  ap(wrap,scbox);
+  for(var di=0;di<DIAL.length;di++){
+    var line=DIAL[di], a=state.dans[line.id];
+    var w2=div('margin-bottom:16px;display:flex;flex-direction:column;align-items:'+(line.left?'flex-start':'flex-end')+';');
+    var sr=div('font-size:11px;font-weight:700;color:#0F766E;margin-bottom:4px;display:flex;align-items:center;gap:6px;');
+    ap(sr,tx((line.left?'👩':'👨')+' '+line.sp));ap(sr,enTip(line.spE));ap(w2,sr);
+    var bubble=div('max-width:90%;'); bubble.className='d-bubble '+(line.left?'d-left':'d-right');
+    if(a){
+      var tc=TC[line.tag]||TC.mixed;
+      var tg=span(line.note,'background:'+tc.bg+';border:1px solid '+tc.bd+';border-radius:99px;font-size:11px;font-weight:700;color:'+tc.tx+';padding:3px 10px;display:inline-block;margin-bottom:8px;');
+      ap(bubble,tg);
+    }
+    var lw=div('font-size:13px;color:#1A1E2E;line-height:1.7;margin-bottom:8px;display:flex;align-items:flex-start;gap:6px;');
+    var lt=span('','flex:1;');
+    var parts=line.line.split('___');
+    for(var pi=0;pi<parts.length;pi++){
+      ap(lt,tx(parts[pi]));
+      if(pi<parts.length-1){
+        if(a) ap(lt,span(a.chosen,'font-weight:700;color:'+(a.correct?'#065F46':'#991B1B')+';background:'+(a.correct?'#DCFCE7':'#FEE2E2')+';border-radius:4px;padding:1px 6px;'));
+        else ap(lt,span('___','background:#E0E7FF;border-radius:4px;padding:1px 8px;color:#6366F1;font-style:italic;font-size:12px;'));
+      }
+    }
+    ap(lw,lt);ap(lw,enTip(line.lineE));ap(bubble,lw);
+    if(!a){
+      if(!state.sopts['d_'+line.id]) state.sopts['d_'+line.id]=shuf(line.opts);
+      var ow=div('display:flex;flex-wrap:wrap;gap:6px;');
+      for(var oi=0;oi<state.sopts['d_'+line.id].length;oi++){
+        var opt=state.sopts['d_'+line.id][oi];
+        var b=document.createElement('button');
+        b.style.cssText='padding:6px 12px;background:#fff;border:1.5px solid '+(line.left?'#5EEAD4':'#BFDBFE')+';border-radius:10px;font-size:12px;color:#1A1E2E;font-weight:500;font-family:inherit;';
+        b.textContent=opt;
+        (function(o){b.addEventListener('click',function(){state.dans[line.id]={chosen:o,correct:o===line.ans};renderSection();});})(opt);
+        ap(ow,b);
+      }
+      ap(bubble,ow);
+    } else {
+      var msg=div('border-radius:8px;padding:6px 10px;font-size:11px;font-weight:600;background:'+(a.correct?'#DCFCE7':'#FEE2E2')+';color:'+(a.correct?'#166534':'#991B1B')+';');
+      msg.textContent=a.correct?'✅ '+line.ans:'❌ Poprawnie: '+line.ans;ap(bubble,msg);
+    }
+    ap(w2,bubble);ap(wrap,w2);
+  }
+  if(Object.keys(state.dans).length===DIAL.length){
+    var sc2=0; var dv=objVals(state.dans); for(var i=0;i<dv.length;i++) if(dv[i].correct) sc2++;
+    var fc=div(''); fc.className='finish';
+    fc.style.background='linear-gradient(135deg,#0F766E,#2563EB)';
+    ap(fc,span('💬','display:block;font-size:32px;margin-bottom:6px;'));
+    ap(fc,span('Dialog ukończony!','display:block;font-weight:800;font-size:17px;margin-bottom:4px;'));
+    ap(fc,span(sc2+'/'+DIAL.length+' poprawnych','display:block;font-size:13px;opacity:.85;'));
+    ap(wrap,fc);
+  }
+  return wrap;
+}
+
+// ── SPRINT ───────────────────────────────────────────────────
+function renderSprint(){
+  var wrap=div('');
+  if(state.smode==='review'){
+    var back=document.createElement('button');
+    back.style.cssText='background:none;border:1.5px solid #D6CCE8;border-radius:10px;padding:7px 14px;color:#1A1E2E;font-weight:600;font-size:13px;margin-bottom:16px;font-family:inherit;';
+    back.textContent='← Wróć';back.addEventListener('click',function(){state.smode='q';renderSection();});ap(wrap,back);
+    var sc=0; var sv=Object.values(state.sans); for(var i=0;i<sv.length;i++) if(sv[i].correct) sc++;
+    ap(wrap,span(sc+'/'+SPRINT_D.length+' ✓','display:block;font-weight:700;color:#2D6A4F;text-align:right;margin-bottom:12px;'));
+    for(var si=0;si<SPRINT_D.length;si++){
+      var item=SPRINT_D[si], ia=state.sans[item.id], tc=TC[item.tag]||TC.mixed;
+      var card=div('margin-bottom:12px;border-radius:12px;padding:12px 14px;background:'+(ia&&ia.correct?'#F0FDF4':'#FFF5F5')+';border:1.5px solid '+(ia&&ia.correct?'#86EFAC':'#FCA5A5')+';');
+      ap(card,span(item.cat,'display:inline-block;font-size:11px;font-weight:700;color:'+tc.tx+';background:'+tc.bg+';border-radius:99px;padding:2px 8px;margin-bottom:6px;'));
+      var ir=div('display:flex;align-items:flex-start;gap:6px;font-size:13px;color:#1A1E2E;font-weight:500;margin-bottom:4px;');
+      ap(ir,span(item.q.replace('___','['+item.ans+']'),'flex:1;'));ap(ir,enTip(item.en));ap(card,ir);
+      ap(card,span((ia&&ia.correct?'✅':'❌')+' '+item.ans,'font-size:11px;font-weight:700;color:'+(ia&&ia.correct?'#166534':'#991B1B')+';'));
+      ap(wrap,card);
+    }
+    return wrap;
+  }
+  var total=SPRINT_D.length, ci=state.sc, q=SPRINT_D[ci];
+  var a=state.sans[q.id], tc=TC[q.tag]||TC.mixed;
+  var sc=0; var sv=objVals(state.sans); for(var i=0;i<sv.length;i++) if(sv[i].correct) sc++;
+  // progress
+  var pb=div('margin-bottom:16px;');
+  var pl=div('display:flex;justify-content:space-between;font-size:12px;color:#6B7280;margin-bottom:6px;');
+  ap(pl,span('Pytanie '+(ci+1)+' / '+total,''));ap(pl,span(sc+' pkt','font-weight:700;color:#2D6A4F;'));ap(pb,pl);
+  var bg=div('background:#E5E7EB;border-radius:99px;height:8px;');
+  var fill=div('height:100%;background:linear-gradient(90deg,#2D6A4F,#2563EB);border-radius:99px;'); fill.style.width=((ci/total)*100)+'%';
+  ap(bg,fill);ap(pb,bg);
+  var dots=div(''); dots.className='sp-dots';
+  for(var si=0;si<SPRINT_D.length;si++){
+    var ia=state.sans[SPRINT_D[si].id], dt=TC[SPRINT_D[si].tag]||TC.mixed;
+    var dot=div(''); dot.className='sp-dot';
+    dot.style.background=ia?(ia.correct?'#DCFCE7':'#FEE2E2'):si===ci?dt.bg:'#F3F4F6';
+    dot.style.borderColor=si===ci?dt.tx:ia?(ia.correct?'#86EFAC':'#FCA5A5'):'#E5E7EB';
+    (function(idx){dot.addEventListener('click',function(){state.sc=idx;renderSection();});})(si);
+    ap(dots,dot);
+  }
+  ap(pb,dots);ap(wrap,pb);
+  // question card
+  var qcard=div('background:#fff;border:2px solid '+tc.bd+';border-radius:16px;padding:20px 18px;min-height:200px;');
+  ap(qcard,span(q.cat,'display:inline-flex;align-items:center;gap:6px;background:'+tc.bg+';border:1px solid '+tc.bd+';border-radius:99px;padding:4px 12px;margin-bottom:12px;font-size:12px;font-weight:700;color:'+tc.tx+';'));
+  var qrow=div('display:flex;align-items:flex-start;gap:6px;font-size:16px;color:#1A1E2E;font-weight:600;margin-bottom:8px;line-height:1.6;');
+  var qt=span('','flex:1;');
+  var qparts=q.q.split('___');
+  for(var pi=0;pi<qparts.length;pi++){
+    ap(qt,tx(qparts[pi]));
+    if(pi<qparts.length-1){
+      if(a) ap(qt,span(a.chosen,'font-weight:700;color:'+(a.correct?'#065F46':'#991B1B')+';background:'+(a.correct?'#DCFCE7':'#FEE2E2')+';border-radius:4px;padding:1px 6px;'));
+      else ap(qt,span('___','background:#E0E7FF;color:#6366F1;padding:1px 10px;border-radius:4px;font-style:italic;'));
+    }
+  }
+  ap(qrow,qt);ap(qrow,enTip(q.en));ap(qcard,qrow);
+  if(!a){
+    if(!state.sopts['sp_'+q.id]) state.sopts['sp_'+q.id]=shuf(q.opts);
+    var grid=div(''); grid.className='opt-grid';
+    for(var oi=0;oi<state.sopts['sp_'+q.id].length;oi++){
+      var opt=state.sopts['sp_'+q.id][oi];
+      var b=document.createElement('button'); b.className='opt';
+      ap(b,span(String.fromCharCode(65+oi),'font-weight:700;font-size:11px;min-width:16px;color:#9CA3AF;'));
+      ap(b,tx(opt));
+      (function(o){b.addEventListener('click',function(){
+        var ok=o===q.ans;
+        state.sans[q.id]={chosen:o,correct:ok};
+        if(ok) addXP();
+        renderSection();
+        if(state.sc<total-1) setTimeout(function(){state.sc++;renderSection();},1200);
+      });})(opt);
+      ap(grid,b);
+    }
+    ap(qcard,grid);
+  } else {
+    var rt=div('border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;margin-bottom:6px;background:'+(a.correct?'#DCFCE7':'#FEE2E2')+';color:'+(a.correct?'#166534':'#991B1B')+';');
+    rt.textContent=a.correct?'✅ Dobrze!':'❌ Poprawnie: '+q.ans;ap(qcard,rt);
+    var re=div('display:flex;gap:6px;background:#F8FAFF;border:1px solid #DBEAFE;border-radius:8px;padding:8px 12px;font-size:12px;');
+    ap(re,span('🇵🇱 '+q.exp,'flex:1;'));ap(re,enTip(q.exp));ap(qcard,re);
+    if(ci<total-1){
+      var nb=document.createElement('button');
+      nb.style.cssText='margin-top:10px;background:'+tc.tx+';border:none;border-radius:10px;padding:9px 20px;color:#fff;font-weight:700;font-size:13px;font-family:inherit;';
+      nb.textContent='Dalej →';nb.addEventListener('click',function(){state.sc++;renderSection();});ap(qcard,nb);
+    }
+  }
+  ap(wrap,qcard);
+  if(objKeys(state.sans).length===total){
+    var sc2=0; var sv2=objVals(state.sans); for(var i=0;i<sv2.length;i++) if(sv2[i].correct) sc2++;
+    var fc=div(''); fc.className='finish';
+    fc.style.background='linear-gradient(135deg,#7C3AED,#2563EB)';
+    ap(fc,span('⚡','display:block;font-size:36px;margin-bottom:6px;'));
+    ap(fc,span('Sprint ukończony!','display:block;font-weight:800;font-size:18px;margin-bottom:4px;'));
+    ap(fc,span(sc2+'/'+total+' poprawnych','display:block;font-size:14px;opacity:.9;margin-bottom:12px;'));
+    var rv=document.createElement('button');
+    rv.style.cssText='background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.5);border-radius:12px;padding:10px 20px;color:#fff;font-weight:700;font-size:13px;font-family:inherit;';
+    rv.textContent='📋 Przejrzyj odpowiedzi';rv.addEventListener('click',function(){state.smode='review';renderSection();});
+    ap(fc,rv);ap(wrap,fc);
+  }
+  return wrap;
+}
+
+// ── MAIN RENDER ──────────────────────────────────────────────
+function renderSection(){
+  var mainEl=document.getElementById('main');
+  mainEl.innerHTML='';
+  var sec=SECS[state.idx];
+  document.getElementById('hdr-sub').textContent=sec.title+' — '+sec.en;
+  // section header
+  var sh=div('display:flex;align-items:center;gap:12px;margin-bottom:20px;');
+  ap(sh,span(sec.icon,'font-size:32px;'));
+  var tw=div('');
+  var ht=document.createElement('h1');
+  ht.style.cssText='font-size:21px;font-weight:800;color:'+sec.color+';margin:0;';
+  ht.textContent=sec.title;ap(tw,ht);ap(sh,tw);ap(sh,enTip(sec.en));
+  ap(mainEl,sh);
+  var content;
+  if(sec.type==='vocab') content=renderVocab(sec);
+  else if(sec.type==='dial') content=renderDial();
+  else if(sec.type==='sprint') content=renderSprint();
+  else content=renderGrammar(sec);
+  ap(mainEl,content);
+  // nav
+  var nav=div('display:flex;gap:10px;margin-top:20px;');
+  if(state.idx>0){
+    var prev=document.createElement('button');
+    prev.style.cssText='flex:1;background:#fff;border:1.5px solid #D6CCE8;border-radius:12px;padding:12px;font-weight:700;font-size:13px;color:#1A1E2E;font-family:inherit;';
+    prev.textContent='← '+SECS[state.idx-1].en;
+    prev.addEventListener('click',function(){state.idx--;render();});ap(nav,prev);
+  }
+  if(state.idx<SECS.length-1){
+    var nxt=document.createElement('button');
+    nxt.style.cssText='flex:1;background:'+sec.color+';border:none;border-radius:12px;padding:12px;color:#fff;font-weight:700;font-size:13px;font-family:inherit;';
+    nxt.textContent=SECS[state.idx+1].en+' →';
+    nxt.addEventListener('click',function(){state.idx++;render();});ap(nav,nxt);
+  }
+  ap(mainEl,nav);
+}
+
+function render(){
+  renderTabs();
+  renderSection();
+}
+
+// Init
+for(var i=0;i<SECS.length;i++){ if(SECS[i].exs) state.ans[SECS[i].id]={}; }
+updateXP();
+render();
+</script>
+</body>
+</html>
