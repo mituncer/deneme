@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>🇵🇱 Polish Vocabulary</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#0f172a; color:#e2e8f0; min-height:100vh; -webkit-tap-highlight-color:transparent; }
+#app { max-width:480px; margin:0 auto; padding:16px; padding-bottom:80px; }
+
+.head { text-align:center; margin-bottom:24px; padding-top:12px; }
+.head h1 { font-size:1.6rem; color:#f8fafc; margin-bottom:4px; }
+.head p { color:#94a3b8; font-size:0.9rem; }
+.stats { display:flex; justify-content:space-around; background:#1e293b; border-radius:16px; padding:20px; margin-bottom:20px; }
+.st { text-align:center; }
+.st b { display:block; font-size:2rem; color:#38bdf8; }
+.st span { font-size:0.75rem; color:#94a3b8; text-transform:uppercase; }
+.bar { background:#1e293b; border-radius:12px; height:32px; position:relative; overflow:hidden; margin-bottom:16px; }
+.bar div { background:linear-gradient(90deg,#0ea5e9,#22d3ee); height:100%; border-radius:12px; transition:width 0.5s; }
+.bar span { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:0.8rem; font-weight:600; }
+.hours { display:flex; align-items:center; gap:8px; justify-content:center; margin-bottom:24px; color:#94a3b8; font-size:0.85rem; }
+.tag { background:#334155; padding:4px 10px; border-radius:20px; font-size:0.75rem; }
+.btns { display:flex; flex-direction:column; gap:12px; }
+.btn { display:flex; align-items:center; justify-content:center; gap:10px; padding:16px 20px; border:none; border-radius:14px; font-size:1rem; font-weight:600; cursor:pointer; transition:all 0.2s; width:100%; -webkit-appearance:none; }
+.pri { background:#0ea5e9; color:white; } .pri:hover { background:#0284c7; }
+.sec { background:#8b5cf6; color:white; } .sec:hover { background:#7c3aed; }
+.gho { background:#1e293b; color:#e2e8f0; } .gho:hover { background:#334155; }
+.bad { background:#ef4444; color:white; } .bad:hover { background:#dc2626; }
+.good { background:#22c55e; color:white; } .good:hover { background:#16a34a; }
+.small { padding:8px 14px; font-size:0.8rem; width:auto; }
+.revbtn { background:#f59e0b; color:#0f172a; margin-top:16px; }
+.revbtn:hover { background:#d97706; }
+.banner { background:#1e3a5f; border:1px solid #0ea5e9; border-radius:12px; padding:14px; margin-top:16px; text-align:center; font-size:0.85rem; cursor:pointer; }
+.info-box { background:#1e3a5f; border:1px solid #f59e0b; border-radius:12px; padding:14px; margin-top:16px; text-align:center; font-size:0.8rem; color:#fbbf24; }
+
+.nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-top:8px; }
+.nav button { background:none; border:none; color:#94a3b8; font-size:1rem; cursor:pointer; padding:8px 0; }
+.nav span { color:#64748b; font-size:0.85rem; }
+.card { background:#1e293b; border-radius:24px; padding:40px 24px; text-align:center; border:2px solid #334155; transition:border-color 0.3s; }
+.card.rev { border-color:#0ea5e9; }
+.pl { font-size:3rem; font-weight:800; color:#f8fafc; margin-bottom:16px; }
+.ex { font-size:1.1rem; color:#94a3b8; font-style:italic; margin-bottom:20px; }
+.revsec { margin-top:12px; }
+.hint { color:#64748b; font-size:0.9rem; margin-bottom:8px; animation:pulse 2s infinite; }
+.ans { border-top:1px solid #334155; padding-top:24px; margin-top:20px; animation:fadeIn 0.4s; }
+.en { font-size:1.6rem; font-weight:700; color:#38bdf8; margin-bottom:24px; }
+.acts { display:flex; gap:12px; }
+.acts .btn { flex:1; flex-direction:column; gap:4px; }
+.acts .btn span { font-size:1.1rem; }
+.acts .btn small { font-size:0.7rem; font-weight:400; opacity:0.8; }
+
+.qbox { text-align:center; margin-bottom:28px; }
+.qlab { color:#94a3b8; font-size:0.9rem; margin-bottom:8px; }
+.qbox h2 { font-size:2.5rem; color:#f8fafc; margin-bottom:12px; }
+.qex { color:#64748b; font-style:italic; }
+.opts { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+.opt { background:#1e293b; border:2px solid #334155; border-radius:14px; padding:18px; color:#e2e8f0; font-size:1.1rem; cursor:pointer; transition:all 0.2s; text-align:left; -webkit-appearance:none; }
+.opt:hover:not(:disabled) { border-color:#0ea5e9; background:#252f47; }
+.opt.ok { border-color:#22c55e; background:#14532d; }
+.opt.bad { border-color:#ef4444; background:#7f1d1d; }
+.opt.dim { opacity:0.4; }
+.opt:disabled { cursor:default; }
+.res { text-align:center; padding:16px; border-radius:12px; margin-bottom:16px; font-weight:600; }
+.res.ok { background:#14532d; color:#86efac; }
+.res.bad { background:#7f1d1d; color:#fca5a5; }
+
+.group { background:#1e293b; border-radius:16px; padding:20px; margin-bottom:16px; }
+.group h3 { font-size:0.95rem; color:#94a3b8; margin-bottom:16px; }
+.row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #334155; }
+.row:last-child { border-bottom:none; }
+.row label { font-size:0.9rem; }
+.row input[type="time"] { background:#0f172a; border:1px solid #334155; color:#e2e8f0; padding:8px 12px; border-radius:8px; font-size:1rem; }
+.igrid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.iitem label { display:block; font-size:0.75rem; color:#94a3b8; margin-bottom:4px; }
+.iitem input { width:100%; background:#0f172a; border:1px solid #334155; color:#e2e8f0; padding:10px; border-radius:8px; text-align:center; font-size:1rem; }
+.danger h3 { color:#ef4444; }
+
+.wlist { display:flex; flex-direction:column; gap:10px; }
+.wi { background:#1e293b; border-radius:14px; padding:16px; border-left:4px solid #334155; }
+.wi.m { border-left-color:#22c55e; } .wi.s { border-left-color:#0ea5e9; } .wi.n { border-left-color:#94a3b8; }
+.wm { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.wm b { font-size:1.2rem; color:#f8fafc; }
+.wm span { font-size:0.95rem; color:#38bdf8; }
+.wx { font-size:0.85rem; color:#94a3b8; font-style:italic; margin-bottom:6px; }
+.ws { font-size:0.75rem; color:#64748b; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.dash,.learn,.quiz,.settings,.list { animation:fadeIn 0.3s ease; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const BASE_VOCAB = [
+  { id: 1, pl: "przy", en: "near, by, at", ex: "Stoję przy oknie." },
+  { id: 2, pl: "wśród", en: "among, amidst", ex: "Jestem wśród przyjaciół." },
+  { id: 3, pl: "na", en: "on, at, in (surface)", ex: "Książka leży na stole." },
+  { id: 4, pl: "nad", en: "above, over", ex: "Lampa wisi nad stołem." },
+  { id: 5, pl: "pod", en: "under, below", ex: "Kot śpi pod łóżkiem." },
+  { id: 6, pl: "przed", en: "in front of, before", ex: "Samochód stoi przed domem." },
+  { id: 7, pl: "za", en: "behind, for, beyond", ex: "Ogród jest za domem." },
+  { id: 8, pl: "między", en: "between", ex: "Stolik stoi między krzesłami." },
+  { id: 9, pl: "obok", en: "next to, beside", ex: "Siedzę obok ciebie." },
+  { id: 10, pl: "po", en: "after, along, for (purpose)", ex: "Idę po zakupy." },
+  { id: 11, pl: "przez", en: "through, across, by (agent)", ex: "Idę przez park." },
+  { id: 12, pl: "wzdłuż", en: "along", ex: "Spacerujemy wzdłuż rzeki." },
+  { id: 13, pl: "zamiast", en: "instead of", ex: "Piję herbatę zamiast kawy." },
+  { id: 14, pl: "wokół", en: "around", ex: "Dzieci biegają wokół domu." },
+  { id: 15, pl: "poza", en: "outside, beyond", ex: "To jest poza domem." },
+  { id: 16, pl: "ponad", en: "above, over (high)", ex: "Samolot leci ponad chmurami." },
+  { id: 17, pl: "mimo", en: "despite, in spite of", ex: "Mimo deszczu wyszedłem." },
+  { id: 18, pl: "do", en: "to, into, until", ex: "Idę do szkoły." },
+  { id: 19, pl: "koło", en: "near, by, around", ex: "Stoję koło drzwi." },
+  { id: 20, pl: "około", en: "about, approximately, around", ex: "Przyjdzie około godziny dziewiątej." }
+];
+
+const DEF_INTERVALS = [5, 15, 30, 60, 120, 120];
+const LAPSE_GAP = 3; // "Didn't Know": show ~3 other cards before repeating the word
+const NEW_BATCH = 20; // keep all words in rotation at once (study the full list)
+
+let state = {
+  view: 'dash',
+  settings: {
+    wdStart: '08:00', wdEnd: '22:00',
+    weStart: '09:00', weEnd: '23:00',
+    intervals: [...DEF_INTERVALS],
+    notif: false
+  },
+  progress: {},
+  customWords: [],   // words imported by the user
+  deleted: [],       // ids removed by the user (may include built-in ids)
+  notifs: [],
+  card: null,
+  revealed: false,
+  quiz: null
+};
+
+// The active word list = built-ins + imported, minus deleted. Rebuilt whenever
+// words are added or removed so every screen stays in sync.
+let VOCAB = [];
+function rebuildVocab() {
+  const del = new Set(state.deleted);
+  VOCAB = [...BASE_VOCAB, ...state.customWords].filter(w => !del.has(w.id));
+}
+
+// Check if running from file:// (notifications won't work)
+function isFileProtocol() {
+  return window.location.protocol === 'file:';
+}
+
+function load() {
+  try {
+    const s = localStorage.getItem('polishV3');
+    if (s) {
+      const p = JSON.parse(s);
+      state.settings = {...state.settings, ...p.settings};
+      state.progress = p.progress || {};
+      state.customWords = p.customWords || [];
+      state.deleted = p.deleted || [];
+    }
+  } catch(e) {}
+  rebuildVocab();
+}
+function save() { localStorage.setItem('polishV3', JSON.stringify({settings: state.settings, progress: state.progress, customWords: state.customWords, deleted: state.deleted})); }
+function isWE() { return [0,6].includes(new Date().getDay()); }
+function hours() { return isWE() ? {s: state.settings.weStart, e: state.settings.weEnd} : {s: state.settings.wdStart, e: state.settings.wdEnd}; }
+function inHours() {
+  const n = new Date(), h = hours();
+  const [sh,sm] = h.s.split(':').map(Number), [eh,em] = h.e.split(':').map(Number);
+  const cur = n.getHours()*60 + n.getMinutes();
+  return cur >= sh*60+sm && cur <= eh*60+em;
+}
+// Interval progression is driven by the "Know it" STREAK (correct), not by how
+// many times the card has been seen. A "Didn't Know" resets the streak to 0, so
+// the next "Know it" starts back at the first interval instead of jumping ahead.
+// previewInt() runs on the button BEFORE the mark, so it looks one step ahead
+// (correct will become correct+1 when the user presses "Knew It").
+function previewInt(id) {
+  const c = state.progress[id]?.correct || 0;
+  return state.settings.intervals[Math.min(c, state.settings.intervals.length-1)];
+}
+// Pick from a pool, avoiding an immediate repeat of the current card when possible.
+function pick(pool, random) {
+  if (!pool.length) return null;
+  let opts = pool;
+  if (pool.length > 1 && state.card) { const f = pool.filter(w => w.id !== state.card.id); if (f.length) opts = f; }
+  return random ? opts[Math.floor(Math.random()*opts.length)] : opts[0];
+}
+function sched(w, min) { return {id: Date.now()+Math.random(), wid: w.id, w: w.pl, t: new Date(Date.now()+min*60000).toISOString(), shown: false}; }
+
+function reqNotif() {
+  if (isFileProtocol()) {
+    alert('Notifications require HTTPS or localhost.\n\nOptions:\n1. Use a local server (see instructions below)\n2. Upload to GitHub Pages / Netlify\n3. Use the online version');
+    return;
+  }
+  if (!('Notification' in window)) {
+    alert('Your browser does not support notifications.');
+    return;
+  }
+  Notification.requestPermission().then(p => {
+    state.settings.notif = p === 'granted';
+    save();
+    render();
+    if (p === 'granted') {
+      alert('Notifications enabled! You will receive spaced repetition reminders.');
+    } else {
+      alert('Permission denied. Check your browser settings to allow notifications.');
+    }
+  }).catch(err => {
+    alert('Error: ' + err.message);
+  });
+}
+function showNotif(w) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('🇵🇱 Polish Review', {body: w.pl + '\n' + w.en + '\n' + w.ex});
+  }
+}
+function checkNotif() {
+  if (isFileProtocol()) return; // Skip if file protocol
+  const now = new Date();
+  state.notifs.forEach(n => {
+    if (!n.shown && new Date(n.t) <= now && inHours()) {
+      n.shown = true; const w = VOCAB.find(x => x.id === n.wid); if (w) showNotif(w);
+    }
+  });
+  state.notifs = state.notifs.filter(n => !n.shown);
+}
+
+function nextWord() {
+  const now = Date.now();
+  // 1. Failed words whose in-session gap has elapsed → repeat within the session.
+  const ready = VOCAB.filter(w => { const p = state.progress[w.id]; return p && p.again && !p.mastered && (p.gap||0) <= 0; });
+  if (ready.length) return pick(ready, true);
+  // 2. Scheduled reviews whose due time has arrived (earliest-due first) — advancing
+  //    these is the whole point, so they come before introducing anything new.
+  const due = VOCAB.filter(w => { const p = state.progress[w.id]; return p && !p.mastered && !p.again && p.due && p.due <= now; })
+    .sort((a,b) => state.progress[a.id].due - state.progress[b.id].due);
+  if (due.length) return pick(due, false);
+  // 3. Introduce a brand-new word (shuffled) — but only keep a small batch in rotation
+  //    so words repeat and climb the ladder quickly instead of dumping all 20 at once.
+  const active = VOCAB.filter(w => { const p = state.progress[w.id]; return p && !p.mastered; }).length;
+  const unseen = VOCAB.filter(w => !state.progress[w.id]);
+  if (unseen.length && active < NEW_BATCH) return pick(unseen, true);
+  // 4. Failed words still inside their gap, nothing left to interleave → force nearest.
+  const waiting = VOCAB.filter(w => { const p = state.progress[w.id]; return p && p.again && !p.mastered; })
+    .sort((a,b) => (state.progress[a.id].gap||0) - (state.progress[b.id].gap||0));
+  if (waiting.length) return waiting[0];
+  // 5. Nothing available right now (everything is scheduled for later, or mastered).
+  return null;
+}
+// Timestamp (ms) of the next word that will become due, or null if none pending.
+function nextDue() {
+  const now = Date.now();
+  const pend = VOCAB.filter(w => { const p = state.progress[w.id]; return p && !p.mastered && p.due && p.due > now; });
+  if (!pend.length) return null;
+  return Math.min(...pend.map(w => state.progress[w.id].due));
+}
+function allMastered() { return VOCAB.every(w => state.progress[w.id]?.mastered); }
+function startLearn() {
+  const w = nextWord();
+  if (!w) { state.view = 'caught'; state.card = null; render(); return; }
+  // Age every OTHER waiting (failed) word by one step — we're spending this card on w.
+  VOCAB.forEach(x => {
+    const p = state.progress[x.id];
+    if (p && p.again && x.id !== w.id && (p.gap||0) > 0) p.gap--;
+  });
+  state.view = 'learn'; state.card = w; state.revealed = false; save(); render();
+}
+function reveal() { state.revealed = true; render(); }
+function mark(known) {
+  const id = state.card.id;
+  if (!state.progress[id]) state.progress[id] = {seen: 0, correct: 0, last: null};
+  const p = state.progress[id];
+  p.seen++; p.last = new Date().toISOString();
+  if (known) { p.nOk = (p.nOk||0) + 1; } else { p.nNo = (p.nNo||0) + 1; }
+  if (known) {
+    p.correct++; p.again = false; p.gap = 0;
+    if (p.correct > state.settings.intervals.length) {
+      // Survived the whole interval ladder → mastered.
+      p.mastered = true; p.due = null;
+    } else {
+      const mins = state.settings.intervals[p.correct - 1];
+      p.due = Date.now() + mins*60000;              // gate reappearance in the loop
+      if (mins > 0) state.notifs.push(sched(state.card, mins)); // and a notification
+    }
+  } else {
+    // Didn't know: reset the streak, drop back into the in-session repeat loop.
+    p.correct = 0; p.again = true; p.gap = LAPSE_GAP; p.due = null;
+  }
+  save(); startLearn();
+}
+
+function startQuiz() {
+  const rev = VOCAB.filter(w => { const p = state.progress[w.id]; return p && p.seen > 0 && !p.mastered; });
+  if (rev.length < 4) { alert('Learn more words first!'); return; }
+  const q = rev[Math.floor(Math.random()*rev.length)];
+  const wrong = VOCAB.filter(w => w.id !== q.id).sort(() => Math.random()-0.5).slice(0,3);
+  const opts = [...wrong, q].sort(() => Math.random()-0.5);
+  state.view = 'quiz'; state.quiz = {q, opts, answered: false, correct: null, sel: null}; render();
+}
+function answerQuiz(oid) {
+  const q = state.quiz; if (q.answered) return;
+  q.answered = true; q.sel = oid; q.correct = oid === q.q.id;
+  const p = state.progress[q.q.id] || (state.progress[q.q.id] = {seen: 0, correct: 0, last: null});
+  if (q.correct) {
+    p.nOk = (p.nOk||0) + 1;
+    p.correct++; p.again = false; p.gap = 0; p.last = new Date().toISOString();
+    if (p.correct > state.settings.intervals.length) {
+      p.mastered = true; p.due = null;
+    } else {
+      const mins = state.settings.intervals[p.correct - 1];
+      p.due = Date.now() + mins*60000;
+      if (mins > 0) state.notifs.push(sched(q.q, mins));
+    }
+  } else {
+    p.nNo = (p.nNo||0) + 1;
+  }
+  save();
+  render();
+}
+
+function stats() {
+  const total = VOCAB.length, seen = Object.keys(state.progress).length;
+  const mastered = Object.values(state.progress).filter(p => p.mastered).length;
+  return {total, seen, mastered, pct: Math.round((mastered/total)*100)};
+}
+
+function render() {
+  const app = document.getElementById('app'); if (!app) return;
+  switch(state.view) {
+    case 'dash': app.innerHTML = dash(); break;
+    case 'learn': app.innerHTML = learn(); break;
+    case 'caught': app.innerHTML = caught(); break;
+    case 'quiz': app.innerHTML = quiz(); break;
+    case 'settings': app.innerHTML = settings(); break;
+    case 'list': app.innerHTML = list(); break;
+  }
+  attachEvents();
+}
+
+function attachEvents() {
+  const app = document.getElementById('app');
+  app.querySelectorAll('[data-act]').forEach(el => {
+    el.onclick = function(e) {
+      const act = this.getAttribute('data-act');
+      const arg = this.getAttribute('data-arg');
+      switch(act) {
+        case 'back': state.view='dash'; render(); break;
+        case 'learn': startLearn(); break;
+        case 'check': startLearn(); break;
+        case 'quiz': startQuiz(); break;
+        case 'list': state.view='list'; render(); break;
+        case 'settings': state.view='settings'; render(); break;
+        case 'reveal': reveal(); break;
+        case 'mark': mark(arg==='true'); break;
+        case 'answer': answerQuiz(parseInt(arg)); break;
+        case 'nextq': startQuiz(); break;
+        case 'notif': reqNotif(); break;
+        case 'save': saveSettings(); break;
+        case 'reset': resetAll(); break;
+        case 'delword': delWord(parseInt(arg)); break;
+      }
+    };
+  });
+  const imp = app.querySelector('#importFile');
+  if (imp) imp.onchange = handleImport;
+}
+
+// ---- Add / import words ----
+function nextWordId() {
+  const ids = [...BASE_VOCAB, ...state.customWords].map(w => w.id);
+  return (ids.length ? Math.max(...ids) : 0) + 1;
+}
+function parseWordLine(line) {
+  line = line.trim();
+  if (!line) return null;
+  let parts;
+  if (line.includes('\t')) parts = line.split('\t');
+  else if (line.includes('|')) parts = line.split('|');
+  else if (line.includes(';')) parts = line.split(';');
+  else parts = line.split(',');
+  parts = parts.map(s => s.trim()).filter(s => s.length);
+  if (parts.length < 2) return null;
+  const pl = parts[0];
+  let en, ex = '';
+  if (parts.length === 2) { en = parts[1]; }
+  else { en = parts.slice(1, parts.length - 1).join(', '); ex = parts[parts.length - 1]; }
+  // skip an obvious header row
+  if (/^(polish|polonyaca|word|#)$/i.test(pl)) return null;
+  return { pl, en, ex };
+}
+function handleImport(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const lines = String(reader.result).split(/\r?\n/);
+    let added = 0, id = nextWordId();
+    const have = new Set(VOCAB.map(w => w.pl.toLowerCase()));
+    lines.forEach(line => {
+      const w = parseWordLine(line);
+      if (!w || have.has(w.pl.toLowerCase())) return;
+      state.customWords.push({ id: id++, pl: w.pl, en: w.en, ex: w.ex });
+      have.add(w.pl.toLowerCase());
+      added++;
+    });
+    rebuildVocab(); save(); render();
+    alert(added ? added + ' word(s) added ✓' : 'No new words found.\nFormat: Polish, English, Example');
+  };
+  reader.onerror = () => alert('Could not read the file.');
+  reader.readAsText(file, 'utf-8');
+  e.target.value = ''; // allow re-importing the same file
+}
+function delWord(id) {
+  const w = VOCAB.find(x => x.id === id); if (!w) return;
+  if (!confirm('Delete "' + w.pl + '"?')) return;
+  if (BASE_VOCAB.some(x => x.id === id)) {
+    if (!state.deleted.includes(id)) state.deleted.push(id);
+  } else {
+    state.customWords = state.customWords.filter(x => x.id !== id);
+  }
+  delete state.progress[id];
+  rebuildVocab(); save(); render();
+}
+
+function dash() {
+  const s = stats(), h = hours();
+  const now = Date.now();
+  const dueNow = VOCAB.filter(w => { const p = state.progress[w.id]; return !p || (!p.mastered && (p.again || !p.due || p.due <= now)); }).length;
+  const fileProto = isFileProtocol();
+  return `
+  <div class="dash">
+    <div class="head"><h1>🇵🇱 Polish Vocab</h1><p>Spaced Repetition</p></div>
+    <div class="stats">
+      <div class="st"><b>${s.mastered}</b><span>Mastered</span></div>
+      <div class="st"><b>${s.seen}</b><span>Seen</span></div>
+      <div class="st"><b>${s.total}</b><span>Total</span></div>
+    </div>
+    <div class="bar"><div style="width:${s.pct}%"></div><span>${s.pct}% Complete</span></div>
+    <div class="hours"><span class="tag">${isWE()?'Weekend':'Weekday'}</span><span>${h.s} - ${h.e}</span><span class="tag" style="background:${dueNow?'#0e7490':'#334155'}">🔁 ${dueNow} due now</span></div>
+    <div class="btns">
+      <button class="btn pri" data-act="learn"><span>📚</span> Start Learning</button>
+      <button class="btn sec" data-act="quiz"><span>🎯</span> Quiz</button>
+      <button class="btn gho" data-act="list"><span>📋</span> Word List</button>
+      <button class="btn gho" data-act="settings"><span>⚙️</span> Settings</button>
+    </div>
+    ${fileProto ? `
+      <div class="info-box">
+        ⚠️ Running from file:// — Notifications disabled.<br>
+        Use a local server or upload online for notifications.<br>
+        <span style="color:#94a3b8">(App works fine without notifications)</span>
+      </div>
+    ` : !state.settings.notif ? `
+      <div class="banner" data-act="notif">🔔 Enable notifications for spaced repetition reminders</div>
+    ` : ''}
+  </div>`;
+}
+
+function learn() {
+  const w = state.card, p = state.progress[w.id], rev = state.revealed;
+  const seen = VOCAB.filter(x => state.progress[x.id]).length;
+  const mastered = VOCAB.filter(x => state.progress[x.id]?.mastered).length;
+  const steps = state.settings.intervals.length;
+  const badge = p?.again
+    ? '🔁 Repeat — you missed this one'
+    : (!p || !p.correct)
+      ? '🆕 New word'
+      : `✅ Streak ${p.correct}/${steps} — step R${Math.min(p.correct+1, steps)}`;
+  return `
+  <div class="learn">
+    <div class="nav"><button data-act="back">← Back</button><span>Started ${seen}/${VOCAB.length} · ✅ ${mastered}</span></div>
+    <div class="card ${rev?'rev':''}">
+      <div class="ws" style="margin-bottom:10px">${badge}</div>
+      <div class="pl">${w.pl}</div>
+      <div class="ex">${w.ex}</div>
+      ${!rev ? `
+        <div class="revsec">
+          <p class="hint">Think about the meaning...</p>
+          <button class="btn revbtn" data-act="reveal"><span>👁️ Show Meaning</span></button>
+        </div>
+      ` : `
+        <div class="ans">
+          <div class="en">${w.en}</div>
+          <div class="acts">
+            <button class="btn bad" data-act="mark" data-arg="false"><span>❌ Didn't Know</span><small>Repeat later</small></button>
+            <button class="btn good" data-act="mark" data-arg="true"><span>✅ Knew It</span><small>${((p?.correct||0)+1) > state.settings.intervals.length ? 'Mastered! 🎉' : 'Next: '+previewInt(w.id)+' min'}</small></button>
+          </div>
+        </div>
+      `}
+    </div>
+  </div>`;
+}
+
+function fmtWait(ms) {
+  const s = Math.max(0, Math.round(ms/1000));
+  if (s < 60) return s + ' sec';
+  const m = Math.round(s/60);
+  if (m < 60) return m + ' min';
+  const h = Math.floor(m/60), r = m%60;
+  return r ? `${h} h ${r} min` : `${h} h`;
+}
+function caught() {
+  const s = stats();
+  if (allMastered()) {
+    return `
+    <div class="learn">
+      <div class="nav"><button data-act="back">← Back</button></div>
+      <div class="card">
+        <div class="pl">🎉</div>
+        <div class="en">All ${s.total} words mastered!</div>
+        <p class="ex">Full spaced-repetition ladder complete.</p>
+        <button class="btn sec" data-act="quiz" style="margin-top:20px"><span>🎯</span> Quiz yourself</button>
+      </div>
+    </div>`;
+  }
+  const due = nextDue();
+  const wait = due ? '~'+fmtWait(due - Date.now()) : 'now';
+  return `
+  <div class="learn">
+    <div class="nav"><button data-act="back">← Back</button></div>
+    <div class="card">
+      <div class="pl">✅</div>
+      <div class="en">Caught up!</div>
+      <p class="ex">No words are due right now.<br>Next review in <b id="waitTxt" style="color:#38bdf8">${wait}</b>.</p>
+      <div class="acts" style="margin-top:20px">
+        <button class="btn good" data-act="check"><span>🔄 Check now</span></button>
+        <button class="btn sec" data-act="quiz"><span>🎯 Quiz</span></button>
+      </div>
+      <p class="ws" style="margin-top:16px">The counter ticks down here; when it reaches 0 the next word opens automatically. If your screen sleeps, just reopen the app or tap “Check now”.</p>
+    </div>
+  </div>`;
+}
+
+function quiz() {
+  const q = state.quiz;
+  return `
+  <div class="quiz">
+    <div class="nav"><button data-act="back">← Back</button></div>
+    <div class="qbox">
+      <p class="qlab">What does this word mean?</p>
+      <h2>${q.q.pl}</h2>
+      <p class="qex">${q.q.ex}</p>
+    </div>
+    <div class="opts">
+      ${q.opts.map(o => `
+        <button class="opt ${q.answered ? (o.id===q.q.id?'ok':o.id===q.sel?'bad':'dim') : ''}" 
+                data-act="answer" data-arg="${o.id}" ${q.answered?'disabled':''}>${o.en}</button>
+      `).join('')}
+    </div>
+    ${q.answered ? `
+      <div class="res ${q.correct?'ok':'bad'}">${q.correct?'✅ Correct!':'❌ Wrong! Answer: '+q.q.en}</div>
+      <button class="btn pri" data-act="nextq">Next →</button>
+    ` : ''}
+  </div>`;
+}
+
+function settings() {
+  const fileProto = isFileProtocol();
+  return `
+  <div class="settings">
+    <div class="nav"><button data-act="back">← Back</button><h2>Settings</h2></div>
+    <div class="group">
+      <h3>⏰ Active Hours</h3>
+      <div class="row"><label>Weekday Start</label><input type="time" id="wdS" value="${state.settings.wdStart}"></div>
+      <div class="row"><label>Weekday End</label><input type="time" id="wdE" value="${state.settings.wdEnd}"></div>
+      <div class="row"><label>Weekend Start</label><input type="time" id="weS" value="${state.settings.weStart}"></div>
+      <div class="row"><label>Weekend End</label><input type="time" id="weE" value="${state.settings.weEnd}"></div>
+    </div>
+    <div class="group">
+      <h3>📊 Intervals (min)</h3>
+      <div class="igrid">
+        ${state.settings.intervals.map((v,i) => `<div class="iitem"><label>R${i+1}</label><input type="number" id="int${i}" value="${v}" min="1"></div>`).join('')}
+      </div>
+    </div>
+    <div class="group">
+      <h3>🔔 Notifications</h3>
+      <div class="row">
+        <span>Status: ${state.settings.notif?'✅ On':'❌ Off'}</span>
+        <button class="btn small" data-act="notif" ${fileProto?'disabled style="opacity:0.5"':''}>${state.settings.notif?'Re-enable':'Enable'}</button>
+      </div>
+      ${fileProto ? '<div style="color:#fbbf24;font-size:0.8rem;margin-top:8px">⚠️ Notifications require HTTPS/localhost</div>' : ''}
+    </div>
+    <div class="group">
+      <h3>➕ Add Words</h3>
+      <p class="ws" style="margin-bottom:10px;line-height:1.5">Import a .txt or .csv file — one word per line:<br><b style="color:#e2e8f0">Polish, English, Example sentence</b><br><span style="color:#64748b">(comma, semicolon, | or tab all work)</span></p>
+      <label class="btn pri" style="cursor:pointer;display:inline-flex;width:auto;padding:12px 18px">📄 Choose file<input type="file" id="importFile" accept=".txt,.csv,text/plain" style="display:none"></label>
+      <div class="ws" style="margin-top:10px">Words in list: <b style="color:#38bdf8">${VOCAB.length}</b> · Imported: ${state.customWords.filter(w=>!state.deleted.includes(w.id)).length}</div>
+    </div>
+    <button class="btn pri" data-act="save">💾 Save</button>
+    <div class="group danger">
+      <h3>⚠️ Data</h3>
+      <button class="btn bad" data-act="reset">Reset All Progress</button>
+    </div>
+  </div>`;
+}
+
+function list() {
+  return `
+  <div class="list">
+    <div class="nav"><button data-act="back">← Back</button><h2>Word List (${VOCAB.length})</h2></div>
+    <div class="wlist">
+      ${VOCAB.map(w => {
+        const p = state.progress[w.id] || {};
+        const ok = p.nOk||0, no = p.nNo||0;
+        const st = p.mastered ? 'm' : p.seen ? 's' : 'n';
+        const status = st==='m' ? '✅ Mastered' : st==='s' ? '👁️ Seen '+p.seen+'x' : '🆕 New';
+        return `<div class="wi ${st}">
+          <div class="wm"><b>${w.pl}</b><span>${w.en}</span></div>
+          <div class="wx">${w.ex||''}</div>
+          <div class="wm" style="margin-top:6px">
+            <span class="ws">${status} · ✅ ${ok} / ❌ ${no}</span>
+            <button class="btn bad small" data-act="delword" data-arg="${w.id}" style="padding:6px 12px">🗑</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function saveSettings() {
+  state.settings.wdStart = document.getElementById('wdS').value;
+  state.settings.wdEnd = document.getElementById('wdE').value;
+  state.settings.weStart = document.getElementById('weS').value;
+  state.settings.weEnd = document.getElementById('weE').value;
+  for (let i=0; i<6; i++) state.settings.intervals[i] = parseInt(document.getElementById('int'+i).value) || 5;
+  save(); state.view='dash'; render();
+}
+function resetAll() { if (confirm('Delete all progress?')) { state.progress = {}; state.notifs = []; save(); render(); } }
+
+load(); render();
+
+// Drives the "Caught up" countdown and auto-opens the next word when it's due.
+function tick() {
+  checkNotif();
+  if (state.view === 'caught') {
+    if (nextWord()) { startLearn(); return; }   // a word came due → open it
+    const el = document.getElementById('waitTxt');
+    if (el) { const d = nextDue(); el.textContent = d ? '~'+fmtWait(d - Date.now()) : 'now'; }
+    else render();
+  }
+}
+setInterval(tick, 1000);
+// Mobile browsers freeze timers on an idle/sleeping tab, so also re-check the
+// moment the user comes back to the app (unlock, tab switch, refocus).
+document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+window.addEventListener('focus', tick);
+window.addEventListener('pageshow', tick);
+tick();
+</script>
+</body>
+</html>
